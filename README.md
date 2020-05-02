@@ -17,7 +17,7 @@ Hi!  I'm  [Eric Wastl](http://was.tl/) . I make Advent of Code.  I hope you like
 You don't need a computer science background to participate - just a little programming knowledge and some  [problem solving skills](https://www.reddit.com/r/adventofcode/comments/7kd8jt/what_would_you_say_are_the_minimal_skills_for/dre0uu3/)  will get you pretty far. Nor do you need a fancy computer; every problem has a solution that completes in at most 15 seconds on ten-year-old hardware.
 
 If you'd like to support Advent of Code, you can do so indirectly by helping to  *[Share *on
-   [Twitter](https://twitter.com/intent/tweet?text=Daily+programming+puzzles+at+Advent+of+Code&url=https%3A%2F%2Fadventofcode%2Ecom%2F&related=ericwastl&hashtags=AdventOfCode)  [Mastodon](javascript:void(0);) * ]*  it with others, or directly via  [PayPal or Coinbase](support) .
+   [Twitter](https://twitter.com/intent/tweet?text=Daily+programming+puzzles+at+Advent+of+Code&url=https%3A%2F%2Fadventofcode%2Ecom%2F&related=ericwastl&hashtags=AdventOfCode)  [Mastodon](javascript:void(0);) * ]*  it with others, or directly via  [PayPal or Coinbase](https://adventofcode.com/support) .
 
 Advent of Code is a registered trademark in the United States.
 
@@ -27,7 +27,7 @@ If you get stuck, try your solution against the  **examples**  given in the puzz
 ## --- Frequently Asked Questions ---
  **Why was this puzzle so easy / hard?**  The difficulty and subject matter varies throughout each event. Very generally, the puzzles get more difficult over time, but your specific skillset will make each puzzle significantly easier or harder for you than someone else. Making puzzles is  [tricky](https://www.reddit.com/r/adventofcode/comments/7idn6k/question_why_does_the_difficulty_vary_so_much/dqy08tk/) .
 
- **Why do the puzzles unlock at midnight EST/UTC-5?**  Because that's when I can consistently be available to make sure everything is working. I also have a family, a day job, and even need sleep occasionally. If you can't participate at midnight, that's not a problem; many people use  [private leaderboards](/leaderboard/private)  to compete with people in their area.
+ **Why do the puzzles unlock at midnight EST/UTC-5?**  Because that's when I can consistently be available to make sure everything is working. I also have a family, a day job, and even need sleep occasionally. If you can't participate at midnight, that's not a problem; many people use  [private leaderboards](https://adventofcode.com/leaderboard/private)  to compete with people in their area.
 
  **How does authentication work?**  Advent of Code uses  [OAuth](https://en.wikipedia.org/wiki/OAuth)  to confirm your identity through other services.  When you log in, you only ever give your credentials to that service - never to Advent of Code.  Then, the service you use tells the Advent of Code servers that you're really you.  In general, this reveals no information about you beyond what is already public; here are examples from  [Reddit](https://api.reddit.com/user/reddit/about)  and  [GitHub](https://api.github.com/users/octocat) . Advent of Code will remember your unique ID, names, URL, and image from the service you use to authenticate.
 
