@@ -1,0 +1,9 @@
+[submodule "aoc2019"]
+	path = aoc2019
+	url = https://github.com/irevoire/aoc2019
+[submodule "aoc2015"]
+	path = aoc2015
+	url = https://github.com/irevoire/aoc2015
+[submodule "aoc2018"]
+	path = aoc2018
+	url = https://github.com/irevoire/aoc2018
