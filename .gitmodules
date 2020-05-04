@@ -10,3 +10,7 @@
 	path = aoc2015
 	url = https://github.com/irevoire/aoc2015
 	branch = master
+[submodule "aoc2016"]
+	path = aoc2016
+	url = https://github.com/irevoire/aoc2016
+	branch = master
