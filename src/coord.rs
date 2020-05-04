@@ -90,7 +90,8 @@ where
 
 impl<I> std::str::FromStr for Coord<I>
 where
-    I: Eq + Clone + FromStr<Err = anyhow::Error>,
+    I: Eq + Clone + FromStr,
+    <I as std::str::FromStr>::Err: std::error::Error + Sync + Send + 'static,
 {
     type Err = anyhow::Error;
 
