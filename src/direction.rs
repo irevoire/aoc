@@ -7,24 +7,17 @@ use std::str::FromStr;
 /// * Right = East
 /// * Up = Top = North
 /// * Down = Bottom = South
-#[derive(Debug, Hash)]
+#[derive(Debug, Hash, Clone, Copy, Eq, PartialEq)]
 pub enum Direction {
-    Left,
-    Right,
-    Up,
-    Down,
-    Top,
-    Bottom,
-
+    North,
     West,
     East,
-    North,
     South,
 }
 
 impl Default for Direction {
     fn default() -> Self {
-        Self::Up
+        Self::North
     }
 }
 
@@ -33,10 +26,10 @@ impl FromStr for Direction {
 
     fn from_str(s: &str) -> Result<Self> {
         Ok(match s.to_lowercase().trim() {
-            "^" | "u" | "n" | "up" | "north" | "top" => Self::Up,
-            ">" | "r" | "e" | "right" | "east" => Self::Right,
-            "v" | "d" | "s" | "down" | "south" | "bottom" => Self::Down,
-            "<" | "l" | "w" | "left" | "west" => Self::Left,
+            "^" | "u" | "n" | "up" | "north" | "top" => Self::North,
+            ">" | "r" | "e" | "right" | "east" => Self::East,
+            "v" | "d" | "s" | "down" | "south" | "bottom" => Self::South,
+            "<" | "l" | "w" | "left" | "west" => Self::West,
             s => bail!("can’t convert {} as a direction", s),
         })
     }

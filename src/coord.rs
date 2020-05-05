@@ -3,7 +3,7 @@ use anyhow::Result;
 use std::str::FromStr;
 use std::{cmp, fmt, ops};
 
-#[derive(Debug, Default, Hash, PartialEq, Eq, Clone)]
+#[derive(Debug, Default, Hash, PartialEq, Eq, Clone, Copy)]
 pub struct Coord<I> {
     pub x: I,
     pub y: I,
@@ -18,6 +18,36 @@ impl<I: Default> Coord<I> {
 impl<I> Coord<I> {
     pub fn at(x: I, y: I) -> Self {
         Self { x, y }
+    }
+}
+
+impl<I> Coord<I>
+where
+    I: ops::Sub<Output = I> + ops::Add<Output = I> + Ord + Copy,
+{
+    pub fn distance_from(&self, other: &Self) -> I {
+        let x = if self.x < other.x {
+            self.x - other.x
+        } else {
+            other.x - self.x
+        };
+
+        let y = if self.y < other.y {
+            self.y - other.y
+        } else {
+            other.y - self.y
+        };
+
+        x + y
+    }
+}
+
+impl<I> Coord<I>
+where
+    I: ops::Add<Output = I> + Copy,
+{
+    pub fn distance_from_base(&self) -> I {
+        self.x + self.y
     }
 }
 
@@ -59,19 +89,19 @@ where
     fn add(self, dir: direction::Direction) -> Self {
         use direction::Direction::*;
         match dir {
-            Left | West => Self {
+            West => Self {
                 x: self.x - I::one(),
                 ..self
             },
-            Right | East => Self {
+            East => Self {
                 x: self.x + I::one(),
                 ..self
             },
-            Up | North | Top => Self {
+            North => Self {
                 y: self.y - I::one(),
                 ..self
             },
-            Down | South | Bottom => Self {
+            South => Self {
                 y: self.y + I::one(),
                 ..self
             },
