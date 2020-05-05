@@ -54,11 +54,11 @@ mod tests {
 
     #[test]
     fn test_through() {
-        let mut iter = Coord::new(0, 0).to(Coord::new(2, 2));
+        let mut iter = Coord::at(0, 0).to(Coord::at(2, 2)).unwrap();
 
-        assert_eq!(iter.next(), Some(Coord::new(0, 0)));
-        assert_eq!(iter.next(), Some(Coord::new(1, 0)));
-        assert_eq!(iter.next(), Some(Coord::new(2, 0)));
-        assert_eq!(iter.next(), Some(Coord::new(0, 1)));
+        assert_eq!(iter.next(), Some(Coord::at(0, 0)));
+        assert_eq!(iter.next(), Some(Coord::at(1, 0)));
+        assert_eq!(iter.next(), Some(Coord::at(2, 0)));
+        assert_eq!(iter.next(), Some(Coord::at(0, 1)));
     }
 }
