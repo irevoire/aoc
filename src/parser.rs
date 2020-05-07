@@ -9,10 +9,11 @@ pub fn lines_from_file(filename: &str) -> impl Iterator<Item = String> {
 }
 
 pub fn lines_from_args(n: usize) -> impl Iterator<Item = String> {
-    let filename = std::env::args()
-        .skip(n)
-        .next()
-        .expect("give me the path to your program");
+    let filename = get_args(n).expect("give me the path to your program");
 
     lines_from_file(&filename)
+}
+
+pub fn get_args(n: usize) -> Option<String> {
+    std::env::args().skip(n).next()
 }
