@@ -14,6 +14,12 @@ pub fn lines_from_args(n: usize) -> impl Iterator<Item = String> {
     lines_from_file(&filename)
 }
 
+pub fn read_file_from_args(n: usize) -> String {
+    std::str::from_utf8(&std::fs::read(get_args(n).expect("Give the path of your file")).unwrap())
+        .expect("I was unable to parse your file to valid UTF-8")
+        .into()
+}
+
 pub fn get_args(n: usize) -> Option<String> {
     std::env::args().skip(n).next()
 }
