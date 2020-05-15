@@ -79,3 +79,17 @@ impl<T> std::ops::IndexMut<Coord<usize>> for Grid<T> {
         &mut self.data[index.y][index.x]
     }
 }
+
+impl<T> std::ops::Index<(usize, usize)> for Grid<T> {
+    type Output = T;
+
+    fn index(&self, index: (usize, usize)) -> &Self::Output {
+        &self.data[index.1][index.0]
+    }
+}
+
+impl<T> std::ops::IndexMut<(usize, usize)> for Grid<T> {
+    fn index_mut(&mut self, index: (usize, usize)) -> &mut Self::Output {
+        &mut self.data[index.1][index.0]
+    }
+}

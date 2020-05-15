@@ -80,6 +80,15 @@ impl<I: std::ops::Add<Output = I>> std::ops::Add for Coord<I> {
     }
 }
 
+impl<T> PartialEq<(T, T)> for Coord<T>
+where
+    T: PartialEq,
+{
+    fn eq(&self, other: &(T, T)) -> bool {
+        self.x == other.0 && self.y == other.1
+    }
+}
+
 impl<I> std::ops::Add<direction::Direction> for Coord<I>
 where
     I: num::One + ops::Add<Output = I> + ops::Sub<Output = I>,
