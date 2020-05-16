@@ -100,6 +100,15 @@ impl<T> std::ops::Deref for Coord<T> {
     }
 }
 
+impl<T> PartialEq<(T, T)> for Coord<T>
+where
+    T: PartialEq,
+{
+    fn eq(&self, other: &(T, T)) -> bool {
+        self.x == other.0 && self.y == other.1
+    }
+}
+
 impl<I> std::ops::Add<direction::Direction> for Coord<I>
 where
     I: num::One + ops::Add<Output = I> + ops::Sub<Output = I>,
@@ -173,9 +182,11 @@ mod tests {
     fn test_from() {
         let mut c = Coord::at(0_u32, 0_u32);
 
-        assert_eq!(&c, &(0_u32, 0_u32).into());
+        let res: &(u32, u32) = &(0_u32, 0_u32);
+        let res: &Coord<u32> = res.into();
+        assert_eq!(&c, res);
         c.x = 2;
         c.y = 3;
-        assert_eq!(c, (2_u32, 3_u32).into());
+        assert_eq!(c, Into::<Coord<u32>>::into((2_u32, 3_u32)));
     }
 }

@@ -25,6 +25,14 @@ impl<T> Grid<T> {
         self.data.iter_mut().flat_map(|sub| sub.iter_mut())
     }
 
+    pub fn lines(&self) -> impl Iterator<Item = &[T]> {
+        self.data.iter().map(|v| v.as_slice())
+    }
+
+    pub fn lines_mut(&mut self) -> impl Iterator<Item = &mut [T]> {
+        self.data.iter_mut().map(|v| v.as_mut_slice())
+    }
+
     pub fn through(
         &self,
         from: Coord<usize>,
@@ -77,5 +85,19 @@ impl<T> std::ops::Index<Coord<usize>> for Grid<T> {
 impl<T> std::ops::IndexMut<Coord<usize>> for Grid<T> {
     fn index_mut(&mut self, index: Coord<usize>) -> &mut Self::Output {
         &mut self.data[index.y][index.x]
+    }
+}
+
+impl<T> std::ops::Index<(usize, usize)> for Grid<T> {
+    type Output = T;
+
+    fn index(&self, index: (usize, usize)) -> &Self::Output {
+        &self.data[index.1][index.0]
+    }
+}
+
+impl<T> std::ops::IndexMut<(usize, usize)> for Grid<T> {
+    fn index_mut(&mut self, index: (usize, usize)) -> &mut Self::Output {
+        &mut self.data[index.1][index.0]
     }
 }

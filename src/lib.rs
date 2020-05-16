@@ -1,9 +1,11 @@
 mod coord;
 mod direction;
 mod grid;
+pub mod iterator;
 pub mod macros;
 mod movement;
 pub mod num;
+pub mod parser;
 mod range;
 mod turtle;
 

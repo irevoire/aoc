@@ -24,3 +24,17 @@ macro_rules! impl_one {
 }
 
 crate::impl_for_primitive!(impl_one: unsigned, signed);
+
+pub trait Distance {
+    /// return the distance between two numbers
+    fn distance(self, other: Self) -> Self;
+}
+
+impl<Number> Distance for Number
+where
+    Number: std::cmp::Ord + std::ops::Sub<Number, Output = Number> + Copy,
+{
+    fn distance(self, other: Self) -> Self {
+        self.max(other) - self.min(other)
+    }
+}
