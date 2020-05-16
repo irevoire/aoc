@@ -25,6 +25,14 @@ impl<T> Grid<T> {
         self.data.iter_mut().flat_map(|sub| sub.iter_mut())
     }
 
+    pub fn lines(&self) -> impl Iterator<Item = &[T]> {
+        self.data.iter().map(|v| v.as_slice())
+    }
+
+    pub fn lines_mut(&mut self) -> impl Iterator<Item = &mut [T]> {
+        self.data.iter_mut().map(|v| v.as_mut_slice())
+    }
+
     pub fn through(
         &self,
         from: Coord<usize>,
