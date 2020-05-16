@@ -80,6 +80,26 @@ impl<I: std::ops::Add<Output = I>> std::ops::Add for Coord<I> {
     }
 }
 
+impl<T> From<(T, T)> for Coord<T> {
+    fn from(t: (T, T)) -> Self {
+        Coord::at(t.0, t.1)
+    }
+}
+
+impl<T> From<&(T, T)> for &Coord<T> {
+    fn from(t: &(T, T)) -> Self {
+        unsafe { std::mem::transmute(t) }
+    }
+}
+
+impl<T> std::ops::Deref for Coord<T> {
+    type Target = (T, T);
+
+    fn deref(&self) -> &Self::Target {
+        unsafe { std::mem::transmute(self) }
+    }
+}
+
 impl<I> std::ops::Add<direction::Direction> for Coord<I>
 where
     I: num::One + ops::Add<Output = I> + ops::Sub<Output = I>,
@@ -132,5 +152,30 @@ where
         let y = coords[1].parse::<I>()?;
 
         Ok(Coord { x, y })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_deref() {
+        let mut c = Coord::at(0, 0);
+
+        assert_eq!(*c, (0, 0));
+        c.x = 2;
+        c.y = 3;
+        assert_eq!(*c, (2, 3));
+    }
+
+    #[test]
+    fn test_from() {
+        let mut c = Coord::at(0_u32, 0_u32);
+
+        assert_eq!(&c, &(0_u32, 0_u32).into());
+        c.x = 2;
+        c.y = 3;
+        assert_eq!(c, (2_u32, 3_u32).into());
     }
 }
