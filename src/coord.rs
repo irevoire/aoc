@@ -157,12 +157,29 @@ impl<I: std::ops::Add<Output = I>> std::ops::Add for Coord<I> {
 }
 
 impl<T> From<(T, T)> for Coord<T> {
+    /// Create a `Coord` from a tuple in the form of `(x, y)`
+    /// ```
+    /// use aoc::Coord;
+    ///
+    /// let coord: Coord<usize> = (0, 0).into();
+    ///
+    /// assert_eq!(coord, Coord::at(0, 0));
+    /// ```
     fn from(t: (T, T)) -> Self {
         Coord::at(t.0, t.1)
     }
 }
 
 impl<T> From<&(T, T)> for &Coord<T> {
+    /// Create a `Coord` from a tuple in the form of `(x, y)`
+    /// ```
+    /// use aoc::Coord;
+    ///
+    /// let coord = &(1_usize, 2_usize);
+    /// let coord: &Coord<usize> = coord.into();
+    ///
+    /// assert_eq!(coord, &Coord::at(1, 2));
+    /// ```
     fn from(t: &(T, T)) -> Self {
         unsafe { std::mem::transmute(t) }
     }
@@ -180,6 +197,22 @@ impl<T> PartialEq<(T, T)> for Coord<T>
 where
     T: PartialEq,
 {
+    /// Allow to makes comparison between `Coord` and tuple.
+    ///
+    /// *Since it's not possible to implements already existings traits to already existing types in
+    /// rust, you'll need to always put the Coord on the left part of the equality.*
+    /// ```
+    /// use aoc::Coord;
+    ///
+    /// let tuple = (1_usize, 2_usize);
+    /// let coord1 = Coord::at(1, 2);
+    /// let coord2 = Coord::at(2, 2);
+    ///
+    /// assert!(coord1 == tuple);
+    /// assert!(coord2 != tuple);
+    ///
+    /// // assert!(tuple == coord1); // This will not compile because the tuple is on the left side
+    /// ```
     fn eq(&self, other: &(T, T)) -> bool {
         self.x == other.0 && self.y == other.1
     }
@@ -191,6 +224,18 @@ where
 {
     type Output = Self;
 
+    /// Allow to add [Direction](crate::direction)s to `Coord`.
+    ///
+    /// ```
+    /// use aoc::{Coord, Direction};
+    ///
+    /// let coord = Coord::default();
+    ///
+    /// assert_eq!(coord + Direction::North, Coord::at(0, -1));
+    /// assert_eq!(coord + Direction::West, Coord::at(-1, 0));
+    /// assert_eq!(coord + Direction::East, Coord::at(1, 0));
+    /// assert_eq!(coord + Direction::South, Coord::at(0, 1));
+    /// ```
     fn add(self, dir: direction::Direction) -> Self {
         use direction::Direction::*;
         match dir {
@@ -230,8 +275,23 @@ where
 {
     type Err = anyhow::Error;
 
+    /// Parse a `Coord` in the form of x, y.
+    /// Whitespaces and parenthesis on the start and end are ignored, the comma is mandatory
+    /// though.
+    /// ```
+    /// use aoc::Coord;
+    ///
+    /// assert_eq!(Coord::at(0, 0), "0, 0".parse::<Coord<usize>>().unwrap());
+    /// assert_eq!(Coord::at(-1, 0), "-1, 0".parse::<Coord<isize>>().unwrap());
+    /// assert_eq!(Coord::at(12, 5), "12,5".parse::<Coord<isize>>().unwrap());
+    /// assert_eq!(Coord::at(12, 5), "(12,5)".parse::<Coord<isize>>().unwrap());
+    /// assert_eq!(Coord::at(12, 5), "  (  12  ,  5  )  ".parse::<Coord<isize>>().unwrap());
+    /// ```
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let coords: Vec<&str> = s.split(',').collect();
+        let coords: Vec<&str> = s
+            .split(',')
+            .map(|s| s.trim_matches(|c: char| c.is_whitespace() || c == '(' || c == ')'))
+            .collect();
 
         let x = coords[0].parse::<I>()?;
         let y = coords[1].parse::<I>()?;
