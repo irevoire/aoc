@@ -1,20 +1,44 @@
+//! Define a Coordinate and all kind of operation.
+//! **Be really cautious when using this module, we are only working on Manhattan distance**
+
 use crate::{direction, num, range};
 use anyhow::Result;
 use std::str::FromStr;
 use std::{cmp, fmt, ops};
 
+/// Define a 2D `Coord`inate. You need to specify the type you need.
+/// Be cautious, if you use an unsigned type you won't be able to use negative coordinate
 #[derive(Debug, Default, Hash, PartialEq, Eq, Clone, Copy)]
 pub struct Coord<I> {
     pub x: I,
     pub y: I,
 }
 
+/// Define a coordinate at the origin.
+/// Similar to `Coord::at(0, 0)`
+/// ```
+/// use aoc::Coord;
+///
+/// let base = Coord::<isize>::at(0, 0);
+/// let current: Coord<isize> = Coord::default();
+///
+/// assert_eq!(base, current);
+/// ```
 impl<I: Default> Coord<I> {
     pub fn new() -> Self {
         Default::default()
     }
 }
 
+/// Create a coordinate at the position you want
+/// ```
+/// use aoc::Coord;
+///
+/// let coord = Coord::<isize>::at(42, 35);
+///
+/// assert_eq!(coord.x, 42);
+/// assert_eq!(coord.y, 35);
+/// ```
 impl<I> Coord<I> {
     pub fn at(x: I, y: I) -> Self {
         Self { x, y }
@@ -23,16 +47,29 @@ impl<I> Coord<I> {
 
 impl<I> Coord<I>
 where
-    I: ops::Sub<Output = I> + ops::Add<Output = I> + Ord + Copy,
+    I: ops::Sub<Output = I> + ops::Add<Output = I> + Ord + Copy + Default,
 {
+    /// Compute the distance between two coordinates.
+    ///
+    /// **Be cautious, we are working on Manhattan distance**
+    /// ```
+    /// use aoc::Coord;
+    ///
+    /// let orig = Coord::default();
+    /// let coord = Coord::<isize>::at(1, 1);
+    /// let coord2 = Coord::<isize>::at(-1, -1);
+    ///
+    /// assert_eq!(orig.distance_from(&coord), 2);
+    /// assert_eq!(orig.distance_from(&coord2), 2);
+    /// ```
     pub fn distance_from(&self, other: &Self) -> I {
-        let x = if self.x < other.x {
+        let x = if self.x > other.x {
             self.x - other.x
         } else {
             other.x - self.x
         };
 
-        let y = if self.y < other.y {
+        let y = if self.y > other.y {
             self.y - other.y
         } else {
             other.y - self.y
@@ -40,18 +77,46 @@ where
 
         x + y
     }
-}
 
-impl<I> Coord<I>
-where
-    I: ops::Add<Output = I> + Copy,
-{
+    /// Compute the distance between from the origin.
+    ///
+    /// **Be cautious, we are working on Manhattan distance**
+    /// ```
+    /// use aoc::Coord;
+    ///
+    /// let coord = Coord::<isize>::at(1, 1);
+    /// let coord2 = Coord::<isize>::at(-1, -1);
+    ///
+    /// assert_eq!(coord.distance_from_base(), 2);
+    /// assert_eq!(coord2.distance_from_base(), 2);
+    /// ```
     pub fn distance_from_base(&self) -> I {
-        self.x + self.y
+        Coord::default().distance_from(&self)
     }
 }
 
 impl<I: Ord + Clone + fmt::Debug> Coord<I> {
+    /// Generate an iterator from a point to another.
+    /// The fonction will return an error if the starting point is before the ending point.
+    /// ```
+    /// use aoc::Coord;
+    ///
+    /// let start = Coord::<isize>::at(-1, -1);
+    /// let end = Coord::<isize>::at(1, 1);
+    /// let mut iter = start.to(end).unwrap();
+    ///
+    /// assert_eq!(iter.next(), Some(Coord::at(-1, -1)));
+    /// assert_eq!(iter.next(), Some(Coord::at(0, -1)));
+    /// assert_eq!(iter.next(), Some(Coord::at(1, -1)));
+    /// assert_eq!(iter.next(), Some(Coord::at(-1, 0)));
+    /// assert_eq!(iter.next(), Some(Coord::at(0 , 0)));
+    /// assert_eq!(iter.next(), Some(Coord::at(1, 0)));
+    /// assert_eq!(iter.next(), Some(Coord::at(-1, 1)));
+    /// assert_eq!(iter.next(), Some(Coord::at(0 , 1)));
+    /// assert_eq!(iter.next(), Some(Coord::at(1, 1)));
+    ///
+    /// assert_eq!(iter.next(), None);
+    /// ```
     pub fn to(self, end: Self) -> Result<range::Range<I>> {
         range::Range::new(self, end)
     }
@@ -72,6 +137,17 @@ impl<I: Ord> Ord for Coord<I> {
 impl<I: std::ops::Add<Output = I>> std::ops::Add for Coord<I> {
     type Output = Self;
 
+    /// Compute the distance between from the origin.
+    ///
+    /// ```
+    /// use aoc::Coord;
+    ///
+    /// let base = Coord::default();
+    /// let coord = Coord::<isize>::at(1, 1);
+    ///
+    /// assert_eq!(base + coord, Coord::at(1, 1));
+    /// assert_eq!(base + coord + coord, Coord::at(2, 2));
+    /// ```
     fn add(self, other: Self) -> Self {
         Self {
             x: self.x + other.x,

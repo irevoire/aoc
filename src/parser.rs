@@ -1,9 +1,33 @@
-//! This module provide all the functions you could ever need for opening files or reading
-//! arguments
+//! Provide all the functions you could ever need for opening files or reading
+//! arguments.
 //!
 //! Since all the input files are quite small in the advent of code we are putting the full file
 //! into RAM instead of using a BufReader.
 
+/// Provide an iterator over the chars of a file converted as `String`.
+/// ```no_run
+/// for line in aoc::parser::chars_as_strings_from_file("input") {
+///     // things
+/// }
+/// ```
+pub fn chars_as_strings_from_file(filename: &str) -> impl Iterator<Item = String> {
+    let file = Box::new(read_file(filename));
+    let file = Box::leak(file);
+    file.chars().map(|c| c.to_string())
+}
+
+/// Provide an iterator over the chars converted as String of the file specified by the position of an argument
+/// ```no_run
+/// for c in aoc::parser::chars_as_strings_from_args(1) {
+///     // things
+/// }
+/// ```
+/// Usually you'll want to use it with `1` because `0` is the name of your own program
+pub fn chars_as_strings_from_args(n: usize) -> impl Iterator<Item = String> {
+    let filename = get_args(n).expect("give me the path to your program");
+
+    chars_as_strings_from_file(&filename)
+}
 /// Provide an iterator over the chars of a file.
 /// ```no_run
 /// for line in aoc::parser::chars_from_file("input") {
@@ -28,6 +52,7 @@ pub fn chars_from_args(n: usize) -> impl Iterator<Item = char> {
 
     chars_from_file(&filename)
 }
+
 /// Provide an iterator over the lines of a file
 /// ```no_run
 /// for line in aoc::parser::lines_from_file("input") {
