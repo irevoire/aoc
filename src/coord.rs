@@ -224,7 +224,7 @@ where
 {
     type Output = Self;
 
-    /// Allow to add [Direction](crate::direction)s to `Coord`.
+    /// Allow to add [Direction](crate::Direction)s to `Coord`.
     ///
     /// ```
     /// use aoc::{Coord, Direction};

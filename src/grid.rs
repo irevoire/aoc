@@ -12,27 +12,32 @@ impl<T> Grid<T> {
         Self { data: Vec::new() }
     }
 
-    /// create a grid from a vec
+    /// create a grid from a Vec of Vec
     pub fn from(data: Vec<Vec<T>>) -> Self {
         Self { data }
     }
 
+    /// Return an iterator on all the elements of the grid
     pub fn iter(&self) -> impl Iterator<Item = &T> {
         self.data.iter().flat_map(|sub| sub.iter())
     }
 
+    /// Return a mutable iterator on all the elements of the grid
     pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut T> {
         self.data.iter_mut().flat_map(|sub| sub.iter_mut())
     }
 
+    /// Return an iterator on all the lines of the grid
     pub fn lines(&self) -> impl Iterator<Item = &[T]> {
         self.data.iter().map(|v| v.as_slice())
     }
 
+    /// Return a mutable iterator on all the lines of the grid
     pub fn lines_mut(&mut self) -> impl Iterator<Item = &mut [T]> {
         self.data.iter_mut().map(|v| v.as_mut_slice())
     }
 
+    /// Return an iterator of all the element in the grid from one point to another
     pub fn through(
         &self,
         from: Coord<usize>,
@@ -41,6 +46,7 @@ impl<T> Grid<T> {
         Ok(from.to(to)?.map(move |coord| &self[coord]))
     }
 
+    /// Return a mutable iterator of all the element in the grid from one point to another
     pub fn through_mut<'a>(
         &'a mut self,
         from: Coord<usize>,

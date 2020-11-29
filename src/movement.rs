@@ -1,7 +1,8 @@
 use anyhow::{Error, Result};
 use std::str::FromStr;
 
-#[derive(Debug, Clone, Copy)]
+/// Describe a movement in one direction with a certain length
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Movement {
     Right(isize),
     Left(isize),
@@ -10,6 +11,7 @@ pub enum Movement {
 use Movement::*;
 
 impl Movement {
+    /// Increment the number of deplacement by one
     pub fn incr(self) -> Self {
         match self {
             Right(n) => Right(n + 1),
@@ -18,6 +20,7 @@ impl Movement {
         }
     }
 
+    /// Decrement the number of deplacement by one
     pub fn decr(self) -> Self {
         match self {
             Right(n) => Right(n - 1),
@@ -26,6 +29,7 @@ impl Movement {
         }
     }
 
+    /// Extract the number of deplacement
     pub fn value(self) -> isize {
         match self {
             Right(n) => n,
@@ -34,6 +38,13 @@ impl Movement {
         }
     }
 
+    /// Get the direction with a deplacement of 1, 0 or -1 depending of the sign of the deplacement
+    /// ```
+    /// use aoc::Movement;
+    ///
+    /// assert_eq!(Movement::Right(42).unit(), Movement::Right(1));
+    /// assert_eq!(Movement::Forward(0).unit(), Movement::Forward(0));
+    /// ```
     pub fn unit(self) -> Self {
         match self {
             Right(n) if n > 0 => Right(1),
@@ -47,6 +58,15 @@ impl Movement {
         }
     }
 
+    /// Generate an iterator from one movement by exploding the Movement(n) into Movement(1)
+    /// followed by n times Forward(1)
+    ///
+    /// ```
+    /// use aoc::Movement;
+    ///
+    /// assert_eq!(Movement::Right(2).explode().collect::<Vec<_>>(), &[Movement::Right(1), Movement::Forward(1)]);
+    /// assert_eq!(Movement::Right(0).explode().collect::<Vec<_>>(), &[Movement::Right(0)]);
+    /// ```
     pub fn explode(self) -> impl Iterator<Item = Self> {
         std::iter::once(self.unit()).chain(
             std::iter::repeat(Forward(1)).take((self.value().abs() as usize).saturating_sub(1)),
