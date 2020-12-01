@@ -14,3 +14,6 @@
 	path = aoc2016
 	url = https://github.com/irevoire/aoc2016
 	branch = master
+[submodule "aoc2020"]
+	path = aoc2020
+	url = https://github.com/irevoire/aoc2020
