@@ -4,6 +4,21 @@
 //! Since all the input files are quite small in the advent of code we are putting the full file
 //! into RAM instead of using a BufReader.
 
+/// Provide an iterator over lines of a file converted as the type you want.
+/// When something can't be parsed it's ignored.
+///
+/// *Be cautious if you use this function with a bad parser it won't throw an error and instead
+/// will return an empty `Iterator`.
+///
+/// ```no_run
+/// for i in aoc::parser::lines_from_args_as::<i64>(1) {
+///     // things
+/// }
+/// ```
+pub fn lines_from_args_as<T: std::str::FromStr>(n: usize) -> impl Iterator<Item = T> {
+    lines_from_args(n).filter_map(|l| l.parse::<T>().ok())
+}
+
 /// Provide an iterator over the chars of a file converted as `String`.
 /// ```no_run
 /// for line in aoc::parser::chars_as_strings_from_file("input") {
@@ -28,6 +43,7 @@ pub fn chars_as_strings_from_args(n: usize) -> impl Iterator<Item = String> {
 
     chars_as_strings_from_file(&filename)
 }
+
 /// Provide an iterator over the chars of a file.
 /// ```no_run
 /// for line in aoc::parser::chars_from_file("input") {
