@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+cargo new $2
+echo 'aoc = { git = "https://github.com/irevoire/aoc" }' >> $2/Cargo.toml
+mkdir $2/src/bin
+mv $2/src/main.rs $2/src/bin/part1.rs
+
