@@ -4,6 +4,28 @@
 //! Since all the input files are quite small in the advent of code we are putting the full file
 //! into RAM instead of using a BufReader.
 
+/// Provide an iterator over lines of a `&str` converted as the type you want.
+/// When something can't be parsed it's ignored.
+///
+/// *Be cautious if you use this function with a bad parser it won't throw an error and instead
+/// will return an empty `Iterator`.
+///
+/// ```
+/// let s = "15
+/// 0
+/// 2
+/// Bonjour
+/// ";
+/// let mut s = aoc::parser::lines_from_str_as::<isize>(s);
+/// assert_eq!(s.next(), Some(15));
+/// assert_eq!(s.next(), Some(0));
+/// assert_eq!(s.next(), Some(2));
+/// assert_eq!(s.next(), None);
+/// ```
+pub fn lines_from_str_as<'a, T: std::str::FromStr>(s: &'a str) -> impl Iterator<Item = T> + 'a {
+    s.lines().filter_map(|l| l.parse::<T>().ok())
+}
+
 /// Provide an iterator over lines of a file converted as the type you want.
 /// When something can't be parsed it's ignored.
 ///
