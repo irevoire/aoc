@@ -1,10 +1,16 @@
 Advent of Code
 ==============
 
-This repository contains all my solution to the advent of code.
-If you don't know what is the advent of code you should check out this website: https://adventofcode.com/about
+This repository contains a all the code that I can use for all the years of the [advent of code](https://adventofcode.com/).
+To see my advent of code solution you should move to the dedicated repository:
+- [Advent of code 2015](https://github.com/irevoire/aoc2015)
+- [Advent of code 2016](https://github.com/irevoire/aoc2016)
+- [Advent of code 2018](https://github.com/irevoire/aoc2018)
+- [Advent of code 2019](https://github.com/irevoire/aoc2019)
+- [Advent of code 2020](https://github.com/irevoire/aoc2020)
 
-Under this line is the `about` part of the advent of code website.
+If you don't know what is the advent of code you should read the [about](https://adventofcode.com/about) part
+of the [advent of code website](https://adventofcode.com/) under this line:
 
 
 -----------------------
