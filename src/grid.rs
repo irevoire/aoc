@@ -17,6 +17,16 @@ impl<T> Grid<T> {
         Self { data }
     }
 
+    /// Return the width of the grid
+    pub fn width(&self) -> usize {
+        self.data[0].len()
+    }
+
+    /// Return the height of the grid
+    pub fn height(&self) -> usize {
+        self.data.len()
+    }
+
     /// Return an iterator on all the elements of the grid
     pub fn iter(&self) -> impl Iterator<Item = &T> {
         self.data.iter().flat_map(|sub| sub.iter())
