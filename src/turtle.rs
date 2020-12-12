@@ -48,13 +48,13 @@ impl Add<Movement> for Turtle {
             }
             (Movement::Left(n), Direction::East)
             | (Movement::Right(n), Direction::West)
-            | (Movement::Forward(n), Direction::North) => {
+            | (Movement::Forward(n), Direction::South) => {
                 self.facing = Direction::North;
                 self.coord.y += n;
             }
             (Movement::Left(n), Direction::West)
             | (Movement::Right(n), Direction::East)
-            | (Movement::Forward(n), Direction::South) => {
+            | (Movement::Forward(n), Direction::North) => {
                 self.facing = Direction::South;
                 self.coord.y -= n;
             }
