@@ -1,7 +1,7 @@
 use crate::Coord;
 use anyhow::Result;
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Eq, PartialEq, Default)]
 pub struct Grid<T> {
     pub data: Vec<Vec<T>>,
 }
