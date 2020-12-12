@@ -335,6 +335,40 @@ where
     }
 }
 
+impl<I> std::ops::Add<crate::Movement> for Coord<I>
+where
+    I: num::One + ops::Add<Output = I> + ops::Sub<Output = I>,
+{
+    type Output = Self;
+
+    /// Allow to add [Direction](crate::Direction)s to `Coord`.
+    ///
+    /// ```
+    /// use aoc::{Coord, Movement};
+    ///
+    /// let coord = Coord::default();
+    ///
+    /// assert_eq!(coord + Movement::North(5), Coord::at(0, -5));
+    /// assert_eq!(coord + Movement::West(3), Coord::at(-3, 0));
+    /// assert_eq!(coord + Movement::East(2), Coord::at(2, 0));
+    /// assert_eq!(coord + Movement::South(15), Coord::at(0, 15));
+    /// ```
+    ///
+    /// Be cautious when using this function, it can panic if you try to convert a `Movement` that
+    /// can't be converted to a `Direction`:
+    /// ```should_panic
+    /// use aoc::{Coord, Movement};
+    /// Coord::<usize>::default() + Movement::Right(5);
+    /// Coord::<usize>::default() + Movement::Left(5);
+    /// Coord::<usize>::default() + Movement::Forward(5);
+    /// ```
+    fn add(self, dir: crate::Movement) -> Self {
+        let (dir, n) = dir.to_dir_val().unwrap();
+
+        (0..n).fold(self, |coord, _| coord + dir)
+    }
+}
+
 impl<I> std::ops::Add<I> for Coord<I>
 where
     I: ops::Add<Output = I> + Clone,

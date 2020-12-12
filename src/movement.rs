@@ -102,11 +102,41 @@ impl Movement {
             std::iter::repeat(Forward(1)).take((self.value().abs() as usize).saturating_sub(1)),
         )
     }
+
+    /// Try to convert a [`Movement`](crate::Movement) to a tuple containing a [`Direction`](crate::Direction)
+    /// and the number of times it should be applied
+    /// ```
+    /// use aoc::{Direction, Movement};
+    ///
+    /// assert_eq!(Movement::North(15).to_dir_val().unwrap(), (Direction::North, 15));
+    /// assert_eq!(Movement::West(-5).to_dir_val().unwrap(), (Direction::West, -5));
+    /// assert_eq!(Movement::East(0).to_dir_val().unwrap(), (Direction::East, 0));
+    /// assert_eq!(Movement::South(53).to_dir_val().unwrap(), (Direction::South, 53));
+    ///
+    /// assert!(Movement::Forward(5).to_dir_val().is_err());
+    /// assert!(Movement::Left(50).to_dir_val().is_err());
+    /// assert!(Movement::Right(0).to_dir_val().is_err());
+    /// ```
+    pub fn to_dir_val(self) -> Result<(crate::Direction, isize)> {
+        use std::convert::TryInto;
+        Ok((self.try_into()?, self.value()))
+    }
 }
 
 impl FromStr for Movement {
     type Err = Error;
 
+    /// Generate a `Movement` from a string.
+    /// Each movement is in two part, the first part indicate an action:
+    /// - `North`: "N"
+    /// - `East`: "E"
+    /// - `South`: "S"
+    /// - `West`: "W"
+    /// - `Forward`: "F"
+    /// - `Right`: "R"
+    /// - `Left`: "L"
+    ///
+    /// And then we expect a number
     fn from_str(s: &str) -> Result<Self> {
         let (left, right) = s.split_at(1);
         Ok(match left {
