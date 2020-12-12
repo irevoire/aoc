@@ -29,24 +29,33 @@ impl Add<Movement> for Turtle {
     type Output = Self;
 
     fn add(mut self, other: Movement) -> Self {
-        use Direction::*;
-        use Movement::*;
-
         match (other, self.facing) {
-            (Right(n), North) | (Left(n), South) | (Forward(n), East) => {
-                self.facing = East;
+            (Movement::North(n), _) => self.coord.y -= n,
+            (Movement::West(n), _) => self.coord.x -= n,
+            (Movement::East(n), _) => self.coord.x += n,
+            (Movement::South(n), _) => self.coord.y += n,
+            (Movement::Right(n), Direction::North)
+            | (Movement::Left(n), Direction::South)
+            | (Movement::Forward(n), Direction::East) => {
+                self.facing = Direction::East;
                 self.coord.x += n;
             }
-            (Left(n), North) | (Right(n), South) | (Forward(n), West) => {
-                self.facing = West;
+            (Movement::Left(n), Direction::North)
+            | (Movement::Right(n), Direction::South)
+            | (Movement::Forward(n), Direction::West) => {
+                self.facing = Direction::West;
                 self.coord.x -= n;
             }
-            (Left(n), East) | (Right(n), West) | (Forward(n), North) => {
-                self.facing = North;
+            (Movement::Left(n), Direction::East)
+            | (Movement::Right(n), Direction::West)
+            | (Movement::Forward(n), Direction::North) => {
+                self.facing = Direction::North;
                 self.coord.y += n;
             }
-            (Left(n), West) | (Right(n), East) | (Forward(n), South) => {
-                self.facing = South;
+            (Movement::Left(n), Direction::West)
+            | (Movement::Right(n), Direction::East)
+            | (Movement::Forward(n), Direction::South) => {
+                self.facing = Direction::South;
                 self.coord.y -= n;
             }
         }
