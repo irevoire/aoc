@@ -122,6 +122,73 @@ impl<I: Ord + Clone + fmt::Debug> Coord<I> {
     }
 }
 
+impl<I> Coord<I>
+where
+    I: ops::Neg<Output = I> + Clone,
+{
+    /// Rotate the coordinate clockwise around the origin
+    /// ```
+    /// use aoc::Coord;
+    ///
+    /// let base = Coord::<isize>::at(3, 1);
+    ///
+    /// assert_eq!(base.rotate_clockwise(), Coord::at(-1, 3));
+    /// assert_eq!(base.rotate_clockwise().rotate_clockwise(), Coord::at(-3, -1));
+    /// assert_eq!(base.rotate_clockwise().rotate_clockwise().rotate_clockwise(), Coord::at(1 , -3));
+    /// assert_eq!(base.rotate_clockwise().rotate_clockwise().rotate_clockwise().rotate_clockwise(), base);
+    /// ```
+    pub fn rotate_clockwise(&self) -> Self {
+        Self::at(-self.y.clone(), self.x.clone())
+    }
+
+    /// Rotate the coordinate clockwise around the origin n times
+    /// ```
+    /// use aoc::Coord;
+    ///
+    /// let base = Coord::<isize>::at(3, 1);
+    ///
+    /// assert_eq!(base.rotate_clockwise_n(0), base);
+    /// assert_eq!(base.rotate_clockwise_n(1), Coord::at(-1, 3));
+    /// assert_eq!(base.rotate_clockwise_n(2), Coord::at(-3, -1));
+    /// assert_eq!(base.rotate_clockwise_n(3), Coord::at(1, -3));
+    /// assert_eq!(base.rotate_clockwise_n(4), base);
+    /// ```
+    pub fn rotate_clockwise_n(&self, n: usize) -> Self {
+        (0..n).fold(self.clone(), |coord, _| coord.rotate_clockwise())
+    }
+
+    /// Rotate the coordinate clockwise around the origin
+    /// ```
+    /// use aoc::Coord;
+    ///
+    /// let base = Coord::<isize>::at(3, 1);
+    ///
+    /// assert_eq!(base.rotate_counter_clockwise(), Coord::at(1, -3));
+    /// assert_eq!(base.rotate_counter_clockwise().rotate_counter_clockwise(), Coord::at(-3, -1));
+    /// assert_eq!(base.rotate_counter_clockwise().rotate_counter_clockwise().rotate_counter_clockwise(), Coord::at(-1 , 3));
+    /// assert_eq!(base.rotate_counter_clockwise().rotate_counter_clockwise().rotate_counter_clockwise().rotate_counter_clockwise(), base);
+    /// ```
+    pub fn rotate_counter_clockwise(&self) -> Self {
+        Self::at(self.y.clone(), -self.x.clone())
+    }
+
+    /// Rotate the coordinate clockwise around the origin n times
+    /// ```
+    /// use aoc::Coord;
+    ///
+    /// let base = Coord::<isize>::at(3, 1);
+    ///
+    /// assert_eq!(base.rotate_counter_clockwise_n(0), base);
+    /// assert_eq!(base.rotate_counter_clockwise_n(1), Coord::at(1, -3));
+    /// assert_eq!(base.rotate_counter_clockwise_n(2), Coord::at(-3, -1));
+    /// assert_eq!(base.rotate_counter_clockwise_n(3), Coord::at(-1, 3));
+    /// assert_eq!(base.rotate_counter_clockwise_n(4), base);
+    /// ```
+    pub fn rotate_counter_clockwise_n(&self, n: usize) -> Self {
+        (0..n).fold(self.clone(), |coord, _| coord.rotate_counter_clockwise())
+    }
+}
+
 impl<I: Ord> PartialOrd for Coord<I> {
     fn partial_cmp(&self, other: &Self) -> Option<cmp::Ordering> {
         Some(self.cmp(other))
@@ -142,7 +209,7 @@ impl<I: std::ops::Add<Output = I>> std::ops::Add for Coord<I> {
     /// ```
     /// use aoc::Coord;
     ///
-    /// let base = Coord::default();
+    /// let base = Coord::<isize>::default();
     /// let coord = Coord::<isize>::at(1, 1);
     ///
     /// assert_eq!(base + coord, Coord::at(1, 1));
@@ -182,6 +249,15 @@ impl<T> From<&(T, T)> for &Coord<T> {
     /// ```
     fn from(t: &(T, T)) -> Self {
         unsafe { std::mem::transmute(t) }
+    }
+}
+
+impl<T> From<&(T, T)> for Coord<T>
+where
+    T: Clone,
+{
+    fn from(t: &(T, T)) -> Self {
+        unsafe { std::mem::transmute::<_, &Coord<T>>(t) }.clone()
     }
 }
 
@@ -259,12 +335,115 @@ where
     }
 }
 
+impl<I> std::ops::Add<I> for Coord<I>
+where
+    I: ops::Add<Output = I> + Clone,
+{
+    type Output = Self;
+
+    /// ```
+    /// use aoc::{Coord, Direction};
+    ///
+    /// let coord = Coord::default();
+    ///
+    /// assert_eq!(coord + 2, Coord::at(2, 2));
+    /// assert_eq!(coord + -2, Coord::at(-2, -2));
+    /// ```
+    fn add(self, n: I) -> Self {
+        Coord::at(self.x + n.clone(), self.y + n)
+    }
+}
+
+impl<I> std::ops::Sub<I> for Coord<I>
+where
+    I: ops::Sub<Output = I> + Clone,
+{
+    type Output = Self;
+
+    /// ```
+    /// use aoc::{Coord, Direction};
+    ///
+    /// let coord = Coord::default();
+    ///
+    /// assert_eq!(coord - 2, Coord::at(-2, -2));
+    /// assert_eq!(coord - 0, Coord::at(0, 0));
+    /// ```
+    fn sub(self, n: I) -> Self {
+        Coord::at(self.x - n.clone(), self.y - n)
+    }
+}
+
+impl<I> std::ops::Mul<I> for Coord<I>
+where
+    I: ops::Mul<Output = I> + Clone,
+{
+    type Output = Self;
+
+    /// ```
+    /// use aoc::{Coord, Direction};
+    ///
+    /// let coord = Coord::at(1, 1);
+    ///
+    /// assert_eq!(coord * 2, Coord::at(2, 2));
+    /// assert_eq!(coord * -2, Coord::at(-2, -2));
+    /// ```
+    fn mul(self, n: I) -> Self {
+        Coord::at(self.x * n.clone(), self.y * n)
+    }
+}
+
+impl<I> std::ops::Div<I> for Coord<I>
+where
+    I: ops::Div<Output = I> + Clone,
+{
+    type Output = Self;
+
+    /// ```
+    /// use aoc::{Coord, Direction};
+    ///
+    /// let coord = Coord::at(10, 5);
+    ///
+    /// assert_eq!(coord / 2, Coord::at(5, 2));
+    /// assert_eq!(coord / -2, Coord::at(-5, -2));
+    /// ```
+    fn div(self, n: I) -> Self {
+        Coord::at(self.x / n.clone(), self.y / n)
+    }
+}
+
 impl<I, T> std::ops::AddAssign<T> for Coord<I>
 where
     Self: std::ops::Add<T, Output = Self> + Clone,
 {
     fn add_assign(&mut self, other: T) {
         *self = self.clone() + other
+    }
+}
+
+impl<I, T> std::ops::SubAssign<T> for Coord<I>
+where
+    Self: std::ops::Sub<T, Output = Self> + Clone,
+{
+    fn sub_assign(&mut self, other: T) {
+        *self = self.clone() - other
+    }
+}
+
+impl<I, T> std::ops::MulAssign<T> for Coord<I>
+where
+    Self: std::ops::Mul<T, Output = Self> + Clone,
+{
+    fn mul_assign(&mut self, other: T) {
+        *self = self.clone() * other
+    }
+}
+
+impl<I, T> std::ops::DivAssign<T> for Coord<I>
+where
+    Self: std::ops::Div<T, Output = Self> + Clone,
+{
+    fn div_assign(&mut self, other: T) {
+        *self = self.clone() / other
     }
 }
 
