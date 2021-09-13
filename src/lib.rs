@@ -15,3 +15,5 @@ pub use grid::Grid;
 pub use movement::Movement;
 pub use range::Range;
 pub use turtle::Turtle;
+
+pub use anyhow::*;
