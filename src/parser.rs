@@ -43,27 +43,26 @@ pub fn lines_from_args_as<T: std::str::FromStr>(n: usize) -> impl Iterator<Item 
 
 /// Provide an iterator over the chars of a file converted as `String`.
 /// ```no_run
-/// for line in aoc::parser::chars_as_strings_from_file("input") {
+/// for line in aoc::parser::chars_from_file_as::<String>("input") {
 ///     // things
 /// }
 /// ```
-pub fn chars_as_strings_from_file(filename: &str) -> impl Iterator<Item = String> {
+pub fn chars_from_file_as<T: std::str::FromStr>(filename: &str) -> impl Iterator<Item = T> {
     let file = Box::new(read_file(filename));
     let file = Box::leak(file);
-    file.chars().map(|c| c.to_string())
+    file.chars().filter_map(|c| c.to_string().parse().ok())
 }
 
 /// Provide an iterator over the chars converted as String of the file specified by the position of an argument
 /// ```no_run
-/// for c in aoc::parser::chars_as_strings_from_args(1) {
+/// for c in aoc::parser::chars_from_args_as::<String>(1) {
 ///     // things
 /// }
 /// ```
 /// Usually you'll want to use it with `1` because `0` is the name of your own program
-pub fn chars_as_strings_from_args(n: usize) -> impl Iterator<Item = String> {
+pub fn chars_from_args_as<T: std::str::FromStr>(n: usize) -> impl Iterator<Item = T> {
     let filename = get_args(n).expect("give me the path to your program");
-
-    chars_as_strings_from_file(&filename)
+    chars_from_file_as(&filename)
 }
 
 /// Provide an iterator over the chars of a file.
