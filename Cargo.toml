@@ -9,6 +9,7 @@ exclude = ["aoc*"]
 
 [dependencies]
 anyhow = "1.0.44"
+atty = "0.2.14"
 
 [workspace]
 members = ["markdown"]
