@@ -350,11 +350,11 @@ impl<T> Grid<T> {
     ///     ],
     /// );
     /// ```
-    pub fn through_mut<'a>(
-        &'a mut self,
+    pub fn through_mut(
+        &mut self,
         from: Coord<usize>,
         to: Coord<usize>,
-    ) -> Result<impl Iterator<Item = &'a mut T>> {
+    ) -> Result<impl Iterator<Item = &mut T>> {
         Ok(from
             .to(to)?
             .map(move |coord| unsafe { std::mem::transmute(&mut self[coord]) }))

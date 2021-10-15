@@ -91,7 +91,7 @@ where
     /// assert_eq!(coord2.distance_from_base(), 2);
     /// ```
     pub fn distance_from_base(&self) -> I {
-        Coord::default().distance_from(&self)
+        Coord::default().distance_from(self)
     }
 }
 

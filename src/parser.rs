@@ -27,7 +27,7 @@ use std::{
 /// assert_eq!(s.next(), Some(2));
 /// assert_eq!(s.next(), None);
 /// ```
-pub fn lines_from_str_as<'a, T: FromStr>(s: &'a str) -> impl Iterator<Item = T> + 'a {
+pub fn lines_from_str_as<T: FromStr>(s: &str) -> impl Iterator<Item = T> + '_ {
     s.lines().filter_map(|l| l.parse::<T>().ok())
 }
 
@@ -195,7 +195,7 @@ pub fn lines<T: FromStr>() -> impl Iterator<Item = T> {
         line.to_owned()
             .parse()
             .ok()
-            .expect(&format!("Could not parse the following line: {}", line))
+            .unwrap_or_else(|| panic!("Could not parse the following line: {}", line))
     })
 }
 
@@ -212,6 +212,6 @@ pub fn chars<T: FromStr>() -> impl Iterator<Item = T> {
         c.to_string()
             .parse()
             .ok()
-            .expect(&format!("Could not parse the following char: {}", c))
+            .unwrap_or_else(|| panic!("Could not parse the following char: {}", c))
     })
 }
