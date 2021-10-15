@@ -13,7 +13,7 @@ pub struct Grid<T> {
 impl<T> Grid<T> {
     /// Create an empty [Grid].
     ///
-    /// See also [Grid::from].
+    /// See also [Grid::from, Grid::with_capacity].
     /// # Example
     ///
     /// ```
@@ -360,6 +360,51 @@ impl<T> Grid<T> {
             .map(move |coord| unsafe { std::mem::transmute(&mut self[coord]) }))
     }
 
+    /// Return an [Iterator] over the borders of the [Grid].
+    ///
+    /// See also: [Grid::borders_mut].
+    /// # Example
+    ///
+    /// ```
+    /// let grid = aoc::Grid::from(vec![
+    ///     vec![1,  2,  3],
+    ///     vec![7,  0,  8],
+    ///     vec![4,  5,  6],
+    /// ]);
+    ///
+    /// let mut iter = grid.borders();
+    /// assert_eq!(iter.next(), Some(&1));
+    /// assert_eq!(iter.next(), Some(&2));
+    /// assert_eq!(iter.next(), Some(&3));
+    /// assert_eq!(iter.next(), Some(&4));
+    /// assert_eq!(iter.next(), Some(&5));
+    /// assert_eq!(iter.next(), Some(&6));
+    /// assert_eq!(iter.next(), Some(&7));
+    /// assert_eq!(iter.next(), Some(&8));
+    /// assert_eq!(iter.next(), None);
+    /// ```
+    pub fn borders(&self) -> impl Iterator<Item = &T> + '_ {
+        match (self.height(), self.width()) {
+            (0 | 1 | 2, _) | (_, 0 | 1) => Box::new(self.iter()) as Box<dyn Iterator<Item = &T>>,
+            (height, width) => Box::new(
+                self.through(Coord::at(0, 0), Coord::at(width - 1, 0))
+                    .unwrap()
+                    .chain(
+                        self.through(Coord::at(0, height - 1), Coord::at(width - 1, height - 1))
+                            .unwrap(),
+                    )
+                    .chain(
+                        self.through(Coord::at(0, 1), Coord::at(0, height - 2))
+                            .unwrap(),
+                    )
+                    .chain(
+                        self.through(Coord::at(width - 1, 1), Coord::at(width - 1, height - 2))
+                            .unwrap(),
+                    ),
+            ) as Box<dyn Iterator<Item = &T>>,
+        }
+    }
+
     /// Returns a [Grid] of the same size as self, with function f applied to each element from top to botom and left to right.
     /// # Example
     ///
@@ -557,7 +602,20 @@ impl<T> Grid<T> {
 }
 
 impl<T: Default + Clone> Grid<T> {
-    pub fn with_capacity(line: usize, col: usize) -> Self {
+    /// Create an empty [Grid] with specific dimension.
+    ///
+    /// See also [Grid::from, Grid::new].
+    /// # Example
+    ///
+    /// ```
+    /// use aoc::Grid;
+    /// let mut grid: Grid<usize> = Grid::with_dimension(2, 2);
+    /// assert_eq!(grid.into_inner(), vec![
+    ///    vec![0, 0],
+    ///    vec![0, 0],
+    /// ]);
+    /// ```
+    pub fn with_dimension(line: usize, col: usize) -> Self {
         Self {
             data: vec![vec![T::default(); col]; line],
         }
@@ -621,5 +679,61 @@ where
                 .try_for_each(|el| write!(f, "{:>1$} ", el, largest_string))?;
             writeln!(f)
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn borders() {
+        #[rustfmt::skip]
+        let grids = vec![
+            (Grid::from(vec![
+                vec![1,  2,  3,  4],
+                vec![9,  0,  0,  11],
+                vec![10, 0,  0,  12],
+                vec![5,  6,  7,  8],
+            ]), 12),
+            (Grid::from(vec![
+                vec![1, 2, 3],
+                vec![7, 0, 8],
+                vec![4, 5, 6]
+            ]), 8),
+            (Grid::from(vec![
+                vec![1, 2],
+                vec![5, 6],
+                vec![3, 4]
+            ]), 6),
+            (Grid::from(vec![
+                vec![1],
+                vec![2],
+                vec![3],
+            ]), 3),
+            (Grid::from(vec![
+                vec![1, 2, 3, 4],
+                vec![5, 6, 7, 8],
+            ]), 8),
+            (Grid::from(vec![
+                vec![1, 2, 3, 4],
+            ]), 4),
+            (Grid::from(vec![
+                vec![1],
+            ]), 1),
+            (Grid::from(vec![
+                vec![],
+            ]), 0),
+        ];
+
+        for (grid, len) in grids {
+            let borders: Vec<_> = grid.borders().collect();
+            assert!(
+                borders.len() == len && borders.windows(2).all(|slice| slice[0] < slice[1]),
+                "Borders failed for the following grid: {}. Got {:?}",
+                grid,
+                borders,
+            );
+        }
     }
 }

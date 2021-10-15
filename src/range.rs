@@ -14,8 +14,8 @@ pub struct Range<I> {
 impl<I: fmt::Debug + Clone + Ord> Range<I> {
     pub fn new(start: Coord<I>, end: Coord<I>) -> Result<Self> {
         ensure!(
-            start < end,
-            "You can’t create a range with starting after the end: {:?} {:?}",
+            start <= end,
+            "You can’t create a range starting after the end: {:?} {:?}",
             start,
             end
         );
