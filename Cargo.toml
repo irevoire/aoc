@@ -1,6 +1,6 @@
 [package]
 name = "aoc"
-version = "0.1.6"
+version = "0.1.7"
 authors = ["Thomas Campistron <irevoire@hotmail.fr>"]
 edition = "2018"
 exclude = ["aoc*"]
@@ -10,6 +10,8 @@ exclude = ["aoc*"]
 [dependencies]
 anyhow = "1.0.44"
 atty = "0.2.14"
+rayon = "1.5.1"
+termion = "1.5.6"
 
 [workspace]
 members = ["markdown"]
