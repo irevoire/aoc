@@ -164,7 +164,9 @@ impl<T> Grid<T> {
         })
     }
 
-    /// Return a mutable [Iterator] on all the elements of the [Grid].
+    /// Creates a mutable [Iterator] which gives the current iteration [Coord]inates as well as the next value.
+    /// The iterator returned yields pairs `(coord, val)`, where `coord` is the current [Coord] of
+    /// iteration and `val` is the value returned by the [Iterator].
     /// # Example
     ///
     /// ```
@@ -172,17 +174,21 @@ impl<T> Grid<T> {
     ///     vec![1, 2],
     ///     vec![3, 4],
     /// ]);
-    /// grid.iter_mut().for_each(|el| *el *= 2);
+    /// grid.enumerate_mut().for_each(|(c, v)| *v = c.y);
     /// assert_eq!(
     ///     grid.into_inner(),
     ///     vec![
-    ///         vec![2, 4],
-    ///         vec![6, 8],
+    ///         vec![0, 0],
+    ///         vec![1, 1],
     ///     ],
     /// );
     /// ```
-    pub fn enumerate_mut(&mut self) -> impl Iterator<Item = &mut T> {
-        self.data.iter_mut().flat_map(|sub| sub.iter_mut())
+    pub fn enumerate_mut(&mut self) -> impl Iterator<Item = (Coord<usize>, &mut T)> {
+        self.lines_mut().enumerate().flat_map(|(y, line)| {
+            line.iter_mut()
+                .enumerate()
+                .map(move |(x, el)| (Coord::at(x, y), el))
+        })
     }
 
     /// Return an iterator on all the lines of the grid
