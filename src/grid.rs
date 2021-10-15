@@ -12,6 +12,8 @@ pub struct Grid<T> {
 
 impl<T> Grid<T> {
     /// Create an empty [Grid].
+    ///
+    /// See also [Grid::from].
     /// # Example
     ///
     /// ```
@@ -72,6 +74,8 @@ impl<T> Grid<T> {
     }
 
     /// Return the width of the [Grid].
+    ///
+    /// See also [Grid::height].
     /// # Example
     ///
     /// ```
@@ -86,6 +90,8 @@ impl<T> Grid<T> {
     }
 
     /// Return the height of the [Grid].
+    ///
+    /// See also [Grid::width].
     /// # Example
     ///
     /// ```
@@ -100,6 +106,8 @@ impl<T> Grid<T> {
     }
 
     /// Return an [Iterator] on all the elements of the [Grid].
+    ///
+    /// See also [Grid::iter_mut], [Grid::enumerate] and [Grid::lines].
     /// # Example
     ///
     /// ```
@@ -119,6 +127,8 @@ impl<T> Grid<T> {
     }
 
     /// Return a mutable [Iterator] on all the elements of the [Grid].
+    ///
+    /// See also [Grid::iter], [Grid::enumerate_mut] and [Grid::lines_mut].
     /// # Example
     ///
     /// ```
@@ -142,6 +152,8 @@ impl<T> Grid<T> {
     /// Creates an [Iterator] which gives the current iteration [Coord]inates as well as the next value.
     /// The iterator returned yields pairs `(coord, val)`, where `coord` is the current [Coord] of
     /// iteration and `val` is the value returned by the [Iterator].
+    ///
+    /// See also [Grid::enumerate_mut].
     /// # Example
     ///
     /// ```
@@ -167,6 +179,8 @@ impl<T> Grid<T> {
     /// Creates a mutable [Iterator] which gives the current iteration [Coord]inates as well as the next value.
     /// The iterator returned yields pairs `(coord, val)`, where `coord` is the current [Coord] of
     /// iteration and `val` is the value returned by the [Iterator].
+    ///
+    /// See also [Grid::enumerate].
     /// # Example
     ///
     /// ```
@@ -191,27 +205,117 @@ impl<T> Grid<T> {
         })
     }
 
-    /// Return an iterator on all the lines of the grid
+    /// Return an [Iterator] of all the lines of the [Grid].
+    ///
+    /// See also [Grid::rlines] and [Grid::lines_mut].
+    /// # Example
+    ///
+    /// ```
+    /// let grid = aoc::Grid::from(vec![
+    ///     vec![1, 2],
+    ///     vec![3, 4],
+    /// ]);
+    /// let mut iter = grid.lines();
+    /// assert_eq!(iter.next(), Some([1, 2].as_slice()));
+    /// assert_eq!(iter.next(), Some([3, 4].as_slice()));
+    /// assert_eq!(iter.next(), None);
+    /// ```
     pub fn lines(&self) -> impl Iterator<Item = &[T]> {
         self.data.iter().map(|v| v.as_slice())
     }
 
-    /// Return a mutable iterator on all the lines of the grid
+    /// Return a mutable [Iterator] on all the lines of the [Grid].
+    ///
+    /// See also [Grid::rlines_mut] and [Grid::lines].
+    /// # Example
+    ///
+    /// ```
+    /// let mut grid = aoc::Grid::from(vec![
+    ///     vec![1, 2],
+    ///     vec![3, 4],
+    /// ]);
+    /// grid.lines_mut().enumerate().for_each(|(i, line)| line.push(3 + i * 2));
+    /// assert_eq!(
+    ///     grid.into_inner(),
+    ///     vec![
+    ///         vec![1, 2, 3],
+    ///         vec![3, 4, 5],
+    ///     ],
+    /// );
+    /// ```
     pub fn lines_mut(&mut self) -> impl Iterator<Item = &mut Vec<T>> {
         self.data.iter_mut()
     }
 
-    /// Return an iterator on all the lines of the grid from the bottom to the top
+    /// Return an [Iterator] on all the lines of the [Grid] from the bottom to the top.
+    ///
+    /// See also [Grid::lines] and [Grid::rlines_mut].
+    /// # Example
+    ///
+    /// ```
+    /// let grid = aoc::Grid::from(vec![
+    ///     vec![1, 2],
+    ///     vec![3, 4],
+    /// ]);
+    /// let mut iter = grid.rlines();
+    /// assert_eq!(iter.next(), Some([3, 4].as_slice()));
+    /// assert_eq!(iter.next(), Some([1, 2].as_slice()));
+    /// assert_eq!(iter.next(), None);
+    /// ```
     pub fn rlines(&self) -> impl Iterator<Item = &[T]> {
         self.data.iter().rev().map(|v| v.as_slice())
     }
 
     /// Return a mutable iterator on all the lines of the grid from the bottom to the top
+    /// # Example
+    ///
+    /// ```
+    /// let mut grid = aoc::Grid::from(vec![
+    ///     vec![1, 2],
+    ///     vec![3, 4],
+    /// ]);
+    /// grid.rlines_mut().enumerate().for_each(|(i, line)| line.push(3 + i * 2));
+    /// assert_eq!(
+    ///     grid.into_inner(),
+    ///     vec![
+    ///         vec![1, 2, 5],
+    ///         vec![3, 4, 3],
+    ///     ],
+    /// );
+    /// ```
     pub fn rlines_mut(&mut self) -> impl Iterator<Item = &mut Vec<T>> {
         self.data.iter_mut().rev()
     }
 
-    /// Return an iterator of all the element in the grid from one point to another
+    /// Return an [Iterator] of all the element in the [Grid] from one [Coord] to another.
+    /// Can return an error if the starting position is situated *AFTER* the end position. See [Coord::to].
+    ///
+    /// See also [Grid::through_mut].
+    /// # Example
+    ///
+    /// ```
+    /// let grid = aoc::Grid::from(vec![
+    ///     vec!['a', 'b', 'c', 'd', 'e'],
+    ///     vec!['f', 'g', 'h', 'i', 'j'],
+    ///     vec!['k', 'l', 'm', 'n', 'o'],
+    ///     vec!['p', 'q', 'r', 's', 't'],
+    ///     vec!['u', 'v', 'w', 'x', 'y'],
+    /// ]);
+    /// let mut iter = grid.through(aoc::Coord::at(1, 1), aoc::Coord::at(3, 3)).unwrap();
+    /// assert_eq!(iter.next(), Some(&'g'));
+    /// assert_eq!(iter.next(), Some(&'h'));
+    /// assert_eq!(iter.next(), Some(&'i'));
+    /// assert_eq!(iter.next(), Some(&'l'));
+    /// assert_eq!(iter.next(), Some(&'m'));
+    /// assert_eq!(iter.next(), Some(&'n'));
+    /// assert_eq!(iter.next(), Some(&'q'));
+    /// assert_eq!(iter.next(), Some(&'r'));
+    /// assert_eq!(iter.next(), Some(&'s'));
+    /// assert_eq!(iter.next(), None);
+    ///
+    /// let result = grid.through(aoc::Coord::at(2, 2), aoc::Coord::at(1, 1));
+    /// assert!(result.is_err());
+    /// ```
     pub fn through(
         &self,
         from: Coord<usize>,
@@ -220,7 +324,32 @@ impl<T> Grid<T> {
         Ok(from.to(to)?.map(move |coord| &self[coord]))
     }
 
-    /// Return a mutable iterator of all the element in the grid from one point to another
+    /// Return a mutable [Iterator] of all the elements in the grid from one [Coord] to another.
+    /// Can return an error if the starting position is situated *AFTER* the end position. See [Coord::to].
+    ///
+    /// See also [Grid::through].
+    /// # Example
+    ///
+    /// ```
+    /// let mut grid = aoc::Grid::from(vec![
+    ///     vec!['a', 'b', 'c', 'd', 'e'],
+    ///     vec!['f', 'g', 'h', 'i', 'j'],
+    ///     vec!['k', 'l', 'm', 'n', 'o'],
+    ///     vec!['p', 'q', 'r', 's', 't'],
+    ///     vec!['u', 'v', 'w', 'x', 'y'],
+    /// ]);
+    /// grid.through_mut(aoc::Coord::at(1, 1), aoc::Coord::at(3, 3)).unwrap().for_each(|el| *el = 'z');
+    /// assert_eq!(
+    ///     grid.into_inner(),
+    ///     vec![
+    ///         vec!['a', 'b', 'c', 'd', 'e'],
+    ///         vec!['f', 'z', 'z', 'z', 'j'],
+    ///         vec!['k', 'z', 'z', 'z', 'o'],
+    ///         vec!['p', 'z', 'z', 'z', 't'],
+    ///         vec!['u', 'v', 'w', 'x', 'y'],
+    ///     ],
+    /// );
+    /// ```
     pub fn through_mut<'a>(
         &'a mut self,
         from: Coord<usize>,
