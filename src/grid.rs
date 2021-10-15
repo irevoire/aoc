@@ -84,8 +84,42 @@ impl<T> Grid<T> {
             .map(move |coord| unsafe { std::mem::transmute(&mut self[coord]) }))
     }
 
+    /// Returns a [Grid] of the same size as self, with function f applied to each element from top to botom and left to right.
+    /// # Example
+    ///
+    /// ```
+    /// let mut grid = aoc::Grid::from(vec![
+    ///     vec![1, 2, 3, 4],
+    ///     vec![5, 6, 7, 8],
+    ///     vec![8, 7, 6, 5],
+    ///     vec![4, 3, 2, 1],
+    ///    ]);
+    /// let grid = grid.map(|el| el.to_string());
+    /// assert_eq!(
+    ///     grid.into_inner(),
+    ///     vec![
+    ///         vec!["1", "2", "3", "4"],
+    ///         vec!["5", "6", "7", "8"],
+    ///         vec!["8", "7", "6", "5"],
+    ///         vec!["4", "3", "2", "1"],
+    ///     ],
+    /// );
+    /// ```
+    pub fn map<F, U>(self, mut f: F) -> Grid<U>
+    where
+        F: FnMut(T) -> U,
+    {
+        Grid::from(
+            self.data
+                .into_iter()
+                .map(|line| line.into_iter().map(&mut f).collect())
+                .collect(),
+        )
+    }
+
     /// Trim a grid from the left
     /// # Example
+    ///
     /// ```
     /// let mut grid = aoc::Grid::from(vec![
     ///     vec![0, 0, 1, 2, 0],
@@ -101,7 +135,7 @@ impl<T> Grid<T> {
     ///         vec![0, 1, 0],
     ///         vec![1, 0, 0],
     ///         vec![0, 0, 0],
-    ///        ],
+    ///     ],
     /// );
     /// ```
     pub fn trim_left_matches(&mut self, to_trim: impl Fn(&T) -> bool) {
@@ -120,6 +154,7 @@ impl<T> Grid<T> {
 
     /// Trim a grid from the right
     /// # Example
+    ///
     /// ```
     /// let mut grid = aoc::Grid::from(vec![
     ///     vec![0, 0, 1, 2, 0],
@@ -135,7 +170,7 @@ impl<T> Grid<T> {
     ///         vec![0, 0, 0, 1],
     ///         vec![0, 0, 1, 0],
     ///         vec![0, 0, 0, 0],
-    ///        ],
+    ///     ],
     /// );
     /// ```
     pub fn trim_right_matches(&mut self, to_trim: impl Fn(&T) -> bool) {
@@ -155,6 +190,7 @@ impl<T> Grid<T> {
 
     /// Trim a grid from the top
     /// # Example
+    ///
     /// ```
     /// let mut grid = aoc::Grid::from(vec![
     ///     vec![0, 0, 0, 0, 0],
@@ -172,7 +208,7 @@ impl<T> Grid<T> {
     ///         vec![0, 0, 0, 1, 0],
     ///         vec![0, 0, 1, 0, 0],
     ///         vec![0, 0, 0, 0, 0],
-    ///        ],
+    ///     ],
     /// );
     /// ```
     pub fn trim_top_matches(&mut self, to_trim: impl Fn(&T) -> bool) {
@@ -185,6 +221,7 @@ impl<T> Grid<T> {
 
     /// Trim a grid from the bottom
     /// # Example
+    ///
     /// ```
     /// let mut grid = aoc::Grid::from(vec![
     ///     vec![0, 0, 0, 0, 0],
@@ -202,7 +239,7 @@ impl<T> Grid<T> {
     ///         vec![0, 0, 1, 2, 0],
     ///         vec![0, 0, 0, 1, 0],
     ///         vec![0, 0, 1, 0, 0],
-    ///        ],
+    ///     ],
     /// );
     /// ```
     pub fn trim_bottom_matches(&mut self, to_trim: impl Fn(&T) -> bool) {
@@ -214,6 +251,7 @@ impl<T> Grid<T> {
     }
 
     /// Trim a grid from all directions
+    ///
     /// # Example
     /// ```
     /// let mut grid = aoc::Grid::from(vec![
@@ -231,7 +269,7 @@ impl<T> Grid<T> {
     ///         vec![1, 2],
     ///         vec![0, 1],
     ///         vec![1, 0],
-    ///        ],
+    ///     ],
     /// );
     /// ```
     pub fn trim_matches(&mut self, to_trim: impl Fn(&T) -> bool) {
