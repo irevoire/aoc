@@ -5,6 +5,7 @@ use std::fmt::Display;
 use crate::Coord;
 use anyhow::Result;
 
+/// A 2D [Grid] with a lot of fancy methods on it.
 #[derive(Debug, Clone, Eq, PartialEq, Default)]
 pub struct Grid<T> {
     pub data: Vec<Vec<T>>,
