@@ -1,3 +1,5 @@
+//! Define a [Grid] and all kind of operations on it.
+
 use std::fmt::Display;
 
 use crate::Coord;
@@ -9,38 +11,177 @@ pub struct Grid<T> {
 }
 
 impl<T> Grid<T> {
-    /// create an empty grid
+    /// Create an empty [Grid].
+    /// # Example
+    ///
+    /// ```
+    /// use aoc::Grid;
+    /// let mut grid: Grid<usize> = Grid::new();
+    /// assert!(grid.into_inner().is_empty());
+    /// ```
     pub fn new() -> Self {
         Self { data: Vec::new() }
     }
 
-    /// create a grid from a Vec of Vec
+    /// Create a [Grid] from a [Vec] of [Vec].
+    /// # Example
+    ///
+    /// ```
+    /// let grid = aoc::Grid::from(vec![
+    ///     vec![1, 2, 3, 4],
+    ///     vec![5, 6, 7, 8],
+    ///     vec![8, 7, 6, 5],
+    ///     vec![4, 3, 2, 1],
+    ///    ]);
+    /// assert_eq!(
+    ///     grid.into_inner(),
+    ///     vec![
+    ///         vec![1, 2, 3, 4],
+    ///         vec![5, 6, 7, 8],
+    ///         vec![8, 7, 6, 5],
+    ///         vec![4, 3, 2, 1],
+    ///     ],
+    /// );
+    /// ```
     pub fn from(data: Vec<Vec<T>>) -> Self {
         Self { data }
     }
 
-    /// Return the inner Vec<Vec<_>>
+    /// Return the inner `Vec<Vec<_>>` of the [Grid].
+    /// # Example
+    ///
+    /// ```
+    /// let grid = aoc::Grid::from(vec![
+    ///     vec![1, 2, 3, 4],
+    ///     vec![5, 6, 7, 8],
+    ///     vec![8, 7, 6, 5],
+    ///     vec![4, 3, 2, 1],
+    ///    ]);
+    /// assert_eq!(
+    ///     grid.into_inner(),
+    ///     vec![
+    ///         vec![1, 2, 3, 4],
+    ///         vec![5, 6, 7, 8],
+    ///         vec![8, 7, 6, 5],
+    ///         vec![4, 3, 2, 1],
+    ///     ],
+    /// );
+    /// ```
     pub fn into_inner(self) -> Vec<Vec<T>> {
         self.data
     }
 
-    /// Return the width of the grid
+    /// Return the width of the [Grid].
+    /// # Example
+    ///
+    /// ```
+    /// let grid = aoc::Grid::from(vec![
+    ///     vec![1, 2, 3, 4],
+    ///     vec![5, 6, 7, 8],
+    /// ]);
+    /// assert_eq!(grid.width(), 4);
+    /// ```
     pub fn width(&self) -> usize {
         self.data[0].len()
     }
 
-    /// Return the height of the grid
+    /// Return the height of the [Grid].
+    /// # Example
+    ///
+    /// ```
+    /// let grid = aoc::Grid::from(vec![
+    ///     vec![1, 2, 3, 4],
+    ///     vec![5, 6, 7, 8],
+    /// ]);
+    /// assert_eq!(grid.height(), 2);
+    /// ```
     pub fn height(&self) -> usize {
         self.data.len()
     }
 
-    /// Return an iterator on all the elements of the grid
+    /// Return an [Iterator] on all the elements of the [Grid].
+    /// # Example
+    ///
+    /// ```
+    /// let grid = aoc::Grid::from(vec![
+    ///     vec![1, 2],
+    ///     vec![3, 4],
+    /// ]);
+    /// let mut iter = grid.iter();
+    /// assert_eq!(iter.next(), Some(&1));
+    /// assert_eq!(iter.next(), Some(&2));
+    /// assert_eq!(iter.next(), Some(&3));
+    /// assert_eq!(iter.next(), Some(&4));
+    /// assert_eq!(iter.next(), None);
+    /// ```
     pub fn iter(&self) -> impl Iterator<Item = &T> {
         self.data.iter().flat_map(|sub| sub.iter())
     }
 
-    /// Return a mutable iterator on all the elements of the grid
+    /// Return a mutable [Iterator] on all the elements of the [Grid].
+    /// # Example
+    ///
+    /// ```
+    /// let mut grid = aoc::Grid::from(vec![
+    ///     vec![1, 2],
+    ///     vec![3, 4],
+    /// ]);
+    /// grid.iter_mut().for_each(|el| *el *= 2);
+    /// assert_eq!(
+    ///     grid.into_inner(),
+    ///     vec![
+    ///         vec![2, 4],
+    ///         vec![6, 8],
+    ///     ],
+    /// );
+    /// ```
     pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut T> {
+        self.data.iter_mut().flat_map(|sub| sub.iter_mut())
+    }
+
+    /// Creates an [Iterator] which gives the current iteration [Coord]inates as well as the next value.
+    /// The iterator returned yields pairs `(coord, val)`, where `coord` is the current [Coord] of
+    /// iteration and `val` is the value returned by the [Iterator].
+    /// # Example
+    ///
+    /// ```
+    /// let grid = aoc::Grid::from(vec![
+    ///     vec![1, 2],
+    ///     vec![3, 4],
+    /// ]);
+    /// let mut iter = grid.enumerate();
+    /// assert_eq!(iter.next(), Some((aoc::Coord::at(0, 0), &1)));
+    /// assert_eq!(iter.next(), Some((aoc::Coord::at(1, 0), &2)));
+    /// assert_eq!(iter.next(), Some((aoc::Coord::at(0, 1), &3)));
+    /// assert_eq!(iter.next(), Some((aoc::Coord::at(1, 1), &4)));
+    /// assert_eq!(iter.next(), None);
+    /// ```
+    pub fn enumerate(&self) -> impl Iterator<Item = (Coord<usize>, &T)> {
+        self.lines().enumerate().flat_map(|(y, line)| {
+            line.iter()
+                .enumerate()
+                .map(move |(x, el)| (Coord::at(x, y), el))
+        })
+    }
+
+    /// Return a mutable [Iterator] on all the elements of the [Grid].
+    /// # Example
+    ///
+    /// ```
+    /// let mut grid = aoc::Grid::from(vec![
+    ///     vec![1, 2],
+    ///     vec![3, 4],
+    /// ]);
+    /// grid.iter_mut().for_each(|el| *el *= 2);
+    /// assert_eq!(
+    ///     grid.into_inner(),
+    ///     vec![
+    ///         vec![2, 4],
+    ///         vec![6, 8],
+    ///     ],
+    /// );
+    /// ```
+    pub fn enumerate_mut(&mut self) -> impl Iterator<Item = &mut T> {
         self.data.iter_mut().flat_map(|sub| sub.iter_mut())
     }
 
@@ -49,14 +190,14 @@ impl<T> Grid<T> {
         self.data.iter().map(|v| v.as_slice())
     }
 
-    /// Return an iterator on all the lines of the grid from the bottom to the top
-    pub fn rlines(&self) -> impl Iterator<Item = &[T]> {
-        self.data.iter().rev().map(|v| v.as_slice())
-    }
-
     /// Return a mutable iterator on all the lines of the grid
     pub fn lines_mut(&mut self) -> impl Iterator<Item = &mut Vec<T>> {
         self.data.iter_mut()
+    }
+
+    /// Return an iterator on all the lines of the grid from the bottom to the top
+    pub fn rlines(&self) -> impl Iterator<Item = &[T]> {
+        self.data.iter().rev().map(|v| v.as_slice())
     }
 
     /// Return a mutable iterator on all the lines of the grid from the bottom to the top
