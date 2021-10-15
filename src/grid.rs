@@ -361,8 +361,6 @@ impl<T> Grid<T> {
     }
 
     /// Return an [Iterator] over the borders of the [Grid].
-    ///
-    /// See also: [Grid::borders_mut].
     /// # Example
     ///
     /// ```
