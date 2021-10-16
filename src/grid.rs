@@ -608,13 +608,13 @@ impl<T: Default + Clone> Grid<T> {
     ///
     /// ```
     /// use aoc::Grid;
-    /// let mut grid: Grid<usize> = Grid::with_dimension(2, 2);
+    /// let mut grid: Grid<usize> = Grid::with_dimension(3, 2);
     /// assert_eq!(grid.into_inner(), vec![
-    ///    vec![0, 0],
-    ///    vec![0, 0],
+    ///    vec![0, 0, 0],
+    ///    vec![0, 0, 0],
     /// ]);
     /// ```
-    pub fn with_dimension(line: usize, col: usize) -> Self {
+    pub fn with_dimension(col: usize, line: usize) -> Self {
         Self {
             data: vec![vec![T::default(); col]; line],
         }
