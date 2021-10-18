@@ -19,6 +19,7 @@ pub use range::Range;
 pub use turtle::Turtle;
 
 pub use anyhow::*;
+pub use atty;
 pub use rayon::prelude::*;
 pub use termion;
 
