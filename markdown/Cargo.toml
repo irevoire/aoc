@@ -1,5 +1,5 @@
 [package]
-name = "markdown"
+name = "aoc_md"
 version = "0.1.0"
 authors = ["Thomas Campistron <irevoire@hotmail.fr>"]
 edition = "2021"
@@ -8,4 +8,4 @@ edition = "2021"
 
 [dependencies]
 scraper = "0.11.0"
-ego-tree = "*"
+ego-tree = "0.6.2"
