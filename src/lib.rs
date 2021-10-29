@@ -1,4 +1,5 @@
 mod coord;
+mod cyclic_list;
 mod direction;
 mod grid;
 pub mod iterator;
@@ -9,9 +10,8 @@ pub mod parser;
 mod range;
 mod turtle;
 
-use std::cmp::Ordering;
-
 pub use coord::Coord;
+pub use cyclic_list::CyclicList;
 pub use direction::Direction;
 pub use grid::Grid;
 pub use movement::Movement;
@@ -49,7 +49,7 @@ pub trait SortedCollection<T: Ord> {
 
 impl<T: Ord> SortedCollection<T> for Vec<T> {
     /// Insert an element into a sorted collection.
-    /// Only efficiant on small vectors, for big collections consider using a [BinaryHeap] or an [HashSet].
+    /// Only efficiant on small vectors, for big collections consider using a [std::collections::BinaryHeap] or an [std::collections::HashSet].
     ///
     /// See also [Vec::binary_remove] and [slice::binary_search].
     /// # Example
@@ -67,7 +67,7 @@ impl<T: Ord> SortedCollection<T> for Vec<T> {
     }
 
     /// Remove an element from a sorted [Vec].
-    /// Only efficiant on small vectors, for big collections consider using a [BinaryHeap] or an [HashSet].
+    /// Only efficiant on small vectors, for big collections consider using a [std::collections::BinaryHeap] or an [std::collections::HashSet].
     ///
     /// See also [Vec::binary_insert] and [slice::binary_search].
     /// # Example
