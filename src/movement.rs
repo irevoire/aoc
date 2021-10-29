@@ -118,7 +118,6 @@ impl Movement {
     /// assert!(Movement::Right(0).to_dir_val().is_err());
     /// ```
     pub fn to_dir_val(self) -> Result<(crate::Direction, isize)> {
-        use std::convert::TryInto;
         Ok((self.try_into()?, self.value()))
     }
 }
