@@ -20,6 +20,8 @@ pub use turtle::Turtle;
 
 pub use anyhow::*;
 pub use atty;
+pub use itertools;
+pub use itertools::Itertools;
 pub use rayon::prelude::*;
 pub use termion;
 
