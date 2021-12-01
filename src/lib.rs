@@ -80,7 +80,7 @@ impl<T: Ord> SortedCollection<T> for Vec<T> {
     /// assert_eq!(a, vec![0, 1, 4, 5]);
     /// ```
     fn binary_remove(&mut self, element: T) {
-        if let Ok(idx) = self.binary_search(&element) {
+        if let std::result::Result::Ok(idx) = self.binary_search(&element) {
             self.remove(idx);
         }
     }
