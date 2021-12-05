@@ -248,6 +248,46 @@ impl<T> Grid<T> {
         self.data.iter_mut()
     }
 
+    /// Return an [Iterator] of all the columns of the [Grid].
+    ///
+    /// See also [Grid::lines] and [Grid::rcolumns].
+    /// # Example
+    ///
+    /// ```
+    /// let grid = aoc::Grid::from(vec![
+    ///     vec![1, 3],
+    ///     vec![2, 4],
+    /// ]);
+    /// let mut iter = grid.columns();
+    /// assert_eq!(iter.next(), Some(vec![&1, &2]));
+    /// assert_eq!(iter.next(), Some(vec![&3, &4]));
+    /// assert_eq!(iter.next(), None);
+    /// ```
+    pub fn columns(&self) -> impl Iterator<Item = Vec<&T>> {
+        (0..self.width()).map(|i| self.lines().map(|line| &line[i]).collect())
+    }
+
+    /// Return an [Iterator] of all the columns of the [Grid] in reverse order.
+    ///
+    /// See also [Grid::lines] and [Grid::rcolumns].
+    /// # Example
+    ///
+    /// ```
+    /// let grid = aoc::Grid::from(vec![
+    ///     vec![3, 1],
+    ///     vec![4, 2],
+    /// ]);
+    /// let mut iter = grid.rcolumns();
+    /// assert_eq!(iter.next(), Some(vec![&1, &2]));
+    /// assert_eq!(iter.next(), Some(vec![&3, &4]));
+    /// assert_eq!(iter.next(), None);
+    /// ```
+    pub fn rcolumns(&self) -> impl Iterator<Item = Vec<&T>> {
+        (0..self.width())
+            .rev()
+            .map(|i| self.lines().map(|line| &line[i]).collect())
+    }
+
     /// Return an [Iterator] on all the lines of the [Grid] from the bottom to the top.
     ///
     /// See also [Grid::lines] and [Grid::rlines_mut].
