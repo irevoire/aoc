@@ -10,9 +10,6 @@ use std::{
 };
 
 /// Read a whole file into a string
-/// ```no_run
-/// let input = aoc::parser::read_file("input");
-/// ```
 fn read_file(filename: &str) -> String {
     std::str::from_utf8(&std::fs::read(filename).unwrap())
         .expect("I was unable to parse your file to valid UTF-8")
@@ -20,9 +17,6 @@ fn read_file(filename: &str) -> String {
 }
 
 /// Read a whole file into a string from `stdin`
-/// ```no_run
-/// let input = aoc::parser::read_file_from_stdin();
-/// ```
 fn read_file_from_stdin() -> String {
     let mut buffer = Vec::new();
     stdin().read_to_end(&mut buffer).unwrap();
