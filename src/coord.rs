@@ -294,6 +294,31 @@ where
     }
 }
 
+impl Coord<usize> {
+    /// Makes a checked addition between a [Direction](crate::Direction)s and a `Coord<usize>`.
+    ///
+    /// ```
+    /// use aoc::{Coord, Direction};
+    ///
+    /// let coord: Coord<usize> = Coord::default();
+    ///
+    /// assert_eq!(coord.checked_add(Direction::North), None);
+    /// assert_eq!(coord.checked_add(Direction::West), None);
+    /// assert_eq!(coord.checked_add(Direction::East), Some(Coord::at(1, 0)));
+    /// assert_eq!(coord.checked_add(Direction::South), Some(Coord::at(0, 1)));
+    /// ```
+    pub fn checked_add(self, dir: direction::Direction) -> Option<Self> {
+        use direction::Direction::*;
+
+        match self {
+            Self { x: 0, y: 0 } if dir == North || dir == West => None,
+            Self { x: 0, .. } if dir == West => None,
+            Self { y: 0, .. } if dir == West => None,
+            Self { .. } => Some(self + dir),
+        }
+    }
+}
+
 impl<I> std::ops::Add<direction::Direction> for Coord<I>
 where
     I: num::One + ops::Add<Output = I> + ops::Sub<Output = I>,
