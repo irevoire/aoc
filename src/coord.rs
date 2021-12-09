@@ -306,6 +306,12 @@ impl Coord<usize> {
     /// assert_eq!(coord.checked_add(Direction::West), None);
     /// assert_eq!(coord.checked_add(Direction::East), Some(Coord::at(1, 0)));
     /// assert_eq!(coord.checked_add(Direction::South), Some(Coord::at(0, 1)));
+    /// assert_eq!(Coord::at(5, 0).checked_add(Direction::North), None);
+    /// assert_eq!(Coord::at(0, 5).checked_add(Direction::West), None);
+    /// assert_eq!(Coord::at(5, 5).checked_add(Direction::North), Some(Coord::at(5, 4)));
+    /// assert_eq!(Coord::at(5, 5).checked_add(Direction::West), Some(Coord::at(4, 5)));
+    /// assert_eq!(Coord::at(5, 5).checked_add(Direction::South), Some(Coord::at(5, 6)));
+    /// assert_eq!(Coord::at(5, 5).checked_add(Direction::East), Some(Coord::at(6, 5)));
     /// ```
     pub fn checked_add(self, dir: direction::Direction) -> Option<Self> {
         use direction::Direction::*;
@@ -313,7 +319,7 @@ impl Coord<usize> {
         match self {
             Self { x: 0, y: 0 } if dir == North || dir == West => None,
             Self { x: 0, .. } if dir == West => None,
-            Self { y: 0, .. } if dir == West => None,
+            Self { y: 0, .. } if dir == North => None,
             Self { .. } => Some(self + dir),
         }
     }
