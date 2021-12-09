@@ -638,6 +638,66 @@ impl<T> Grid<T> {
         self.trim_top_matches(&to_trim);
         self.trim_bottom_matches(&to_trim);
     }
+
+    /// Get a reference to an element from the [Grid] or
+    /// an [Option] if the specified [Coord] is out of range.
+    ///
+    /// # Example
+    /// ```
+    /// use aoc::Coord;
+    ///
+    /// let mut grid = aoc::Grid::from(vec![
+    ///     vec![1, 1, 2, 5],
+    ///     vec![2, 0, 1, 0],
+    ///     vec![5, 1, 0, 3],
+    ///     vec![4, 0, 8, 0],
+    ///    ]);
+    ///
+    /// assert_eq!(grid.get(Coord::at(0, 0)), Some(&1));
+    /// assert_eq!(grid.get(Coord::at(3, 0)), Some(&5));
+    /// assert_eq!(grid.get(Coord::at(4, 0)), None);
+    /// assert_eq!(grid.get(Coord::at(0, 3)), Some(&4));
+    /// assert_eq!(grid.get(Coord::at(0, 4)), None);
+    /// assert_eq!(grid.get(Coord::at(3, 3)), Some(&0));
+    /// assert_eq!(grid.get(Coord::at(4, 4)), None);
+    /// ```
+    pub fn get(&self, coord: Coord<usize>) -> Option<&T> {
+        if coord.x >= self.width() || coord.y >= self.height() {
+            None
+        } else {
+            Some(&self[coord])
+        }
+    }
+
+    /// Get a mutable reference to an element from the [Grid] or
+    /// an [Option] if the specified [Coord] is out of range.
+    ///
+    /// # Example
+    /// ```
+    /// use aoc::Coord;
+    ///
+    /// let mut grid = aoc::Grid::from(vec![
+    ///     vec![1, 1, 2, 5],
+    ///     vec![2, 0, 1, 0],
+    ///     vec![5, 1, 0, 3],
+    ///     vec![4, 0, 8, 0],
+    ///    ]);
+    ///
+    /// assert_eq!(grid.get(Coord::at(0, 0)), Some(&1));
+    /// assert_eq!(grid.get(Coord::at(3, 0)), Some(&5));
+    /// assert_eq!(grid.get(Coord::at(4, 0)), None);
+    /// assert_eq!(grid.get(Coord::at(0, 3)), Some(&4));
+    /// assert_eq!(grid.get(Coord::at(0, 4)), None);
+    /// assert_eq!(grid.get(Coord::at(3, 3)), Some(&0));
+    /// assert_eq!(grid.get(Coord::at(4, 4)), None);
+    /// ```
+    pub fn get_mut(&mut self, coord: Coord<usize>) -> Option<&mut T> {
+        if coord.x >= self.width() || coord.y >= self.height() {
+            None
+        } else {
+            Some(&mut self[coord])
+        }
+    }
 }
 
 impl<T: Default + Clone> Grid<T> {
