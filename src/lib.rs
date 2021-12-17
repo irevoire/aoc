@@ -51,6 +51,15 @@ pub trait SortedCollection<T: Ord> {
     fn binary_remove(&mut self, element: T);
 }
 
+/// Define specific operations defined only on sorted collections.
+pub trait SortedCollectionByKey<E, O: Ord> {
+    /// Insert an element into a sorted collection by key.
+    fn binary_insert_by_key(&mut self, element: E, f: impl FnMut(&E) -> O);
+
+    /// Insert an element into a sorted collection by key.
+    fn binary_remove_by_key(&mut self, element: E, f: impl FnMut(&E) -> O);
+}
+
 impl<T: Ord> SortedCollection<T> for Vec<T> {
     /// Insert an element into a sorted collection.
     /// Only efficiant on small vectors, for big collections consider using a [std::collections::BinaryHeap] or an [std::collections::HashSet].
@@ -85,6 +94,43 @@ impl<T: Ord> SortedCollection<T> for Vec<T> {
     /// ```
     fn binary_remove(&mut self, element: T) {
         if let std::result::Result::Ok(idx) = self.binary_search(&element) {
+            self.remove(idx);
+        }
+    }
+}
+
+impl<E, O: Ord> SortedCollectionByKey<E, O> for Vec<E> {
+    /// Insert an element by key into a sorted collection.
+    /// Only efficiant on small vectors, for big collections consider using a [std::collections::BinaryHeap] or an [std::collections::HashSet].
+    ///
+    /// See also [Vec::binary_remove] and [slice::binary_search].
+    /// # Example
+    /// ```
+    /// use aoc::*;
+    /// let mut a: Vec<isize> = vec![0, -1, 2, 4, -5];
+    /// a.binary_insert_by_key(-3, |n| n.abs());
+    /// assert_eq!(a, vec![0, -1, 2, -3, 4, -5]);
+    /// ```
+    fn binary_insert_by_key(&mut self, element: E, mut f: impl FnMut(&E) -> O) {
+        let idx = self
+            .binary_search_by_key(&f(&element), f)
+            .unwrap_or_else(|idx| idx);
+        self.insert(idx, element);
+    }
+
+    /// Remove an element from a sorted [Vec].
+    /// Only efficiant on small vectors, for big collections consider using a [std::collections::BinaryHeap] or an [std::collections::HashSet].
+    ///
+    /// See also [Vec::binary_insert] and [slice::binary_search].
+    /// # Example
+    /// ```
+    /// use aoc::*;
+    /// let mut a: Vec<isize> = vec![0, -1, 2, -3, 4, -5];
+    /// a.binary_remove_by_key(-3, |n| n.abs());
+    /// assert_eq!(a, vec![0, -1, 2, 4, -5]);
+    /// ```
+    fn binary_remove_by_key(&mut self, element: E, mut f: impl FnMut(&E) -> O) {
+        if let std::result::Result::Ok(idx) = self.binary_search_by_key(&f(&element), f) {
             self.remove(idx);
         }
     }
