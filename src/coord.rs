@@ -9,7 +9,7 @@ use std::{cmp, fmt, ops};
 /// Define a 2D `Coord`inate. You need to specify the type you need.
 /// Be cautious, if you use an unsigned type you won't be able to use negative coordinate
 #[derive(Debug, Default, Hash, PartialEq, Eq, Clone, Copy)]
-pub struct Coord<I> {
+pub struct Coord<I = usize> {
     pub x: I,
     pub y: I,
 }
