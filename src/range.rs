@@ -4,7 +4,7 @@ use std::fmt;
 use std::ops;
 
 #[derive(Debug)]
-pub struct Range<I> {
+pub struct Range<I = usize> {
     pub start: Coord<I>,
     current: Coord<I>,
     finished: bool,
@@ -25,6 +25,30 @@ impl<I: fmt::Debug + Clone + Ord> Range<I> {
             finished: false,
             end,
         })
+    }
+
+    /// Return `true` if the given coordinate is contained in the [Range].
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use aoc::Coord;
+    ///
+    /// let range = Coord::at(10, 10).to(Coord::at(15, 15)).unwrap();
+    ///
+    /// assert_eq!(range.contains((12, 13)), true);
+    /// assert_eq!(range.contains((10, 10)), true);
+    /// assert_eq!(range.contains((15, 15)), true);
+    /// assert_eq!(range.contains((14, 16)), false);
+    /// assert_eq!(range.contains((9, 12)), false);
+    /// ```
+    pub fn contains(&self, other: impl Into<Coord<I>>) -> bool {
+        let other: Coord<I> = other.into();
+
+        self.start.x <= other.x
+            && other.x <= self.end.x
+            && self.start.y <= other.y
+            && other.y <= self.end.y
     }
 }
 
