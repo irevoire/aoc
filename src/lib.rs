@@ -20,6 +20,7 @@ pub use turtle::Turtle;
 
 pub use anyhow::*;
 pub use atty;
+pub use im;
 pub use indicatif;
 pub use indicatif::{ParallelProgressIterator, ProgressIterator};
 pub use itertools;
