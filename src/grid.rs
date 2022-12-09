@@ -444,6 +444,54 @@ impl<T> Grid<T> {
         }
     }
 
+    /// Return an [Iterator] over the borders [Coord] of the [Grid].
+    /// # Example
+    ///
+    /// ```
+    /// # use aoc::Coord;
+    /// let grid = aoc::Grid::from(vec![
+    ///     vec![1,  2,  3],
+    ///     vec![7,  0,  8],
+    ///     vec![4,  5,  6],
+    /// ]);
+    ///
+    /// let mut iter = grid.borders_coord();
+    /// assert_eq!(iter.next(), Some(Coord::at(0, 0)));
+    /// assert_eq!(iter.next(), Some(Coord::at(1, 0)));
+    /// assert_eq!(iter.next(), Some(Coord::at(2, 0)));
+    /// assert_eq!(iter.next(), Some(Coord::at(0, 2)));
+    /// assert_eq!(iter.next(), Some(Coord::at(1, 2)));
+    /// assert_eq!(iter.next(), Some(Coord::at(2, 2)));
+    /// assert_eq!(iter.next(), Some(Coord::at(0, 1)));
+    /// assert_eq!(iter.next(), Some(Coord::at(2, 1)));
+    /// assert_eq!(iter.next(), None);
+    /// ```
+    pub fn borders_coord(&self) -> impl Iterator<Item = Coord<usize>> + '_ {
+        match (self.height(), self.width()) {
+            (0 | 1 | 2, _) | (_, 0 | 1) => Box::new(
+                Coord::at(0, 0)
+                    .to(Coord::at(self.height(), self.width()))
+                    .unwrap(),
+            ) as Box<dyn Iterator<Item = Coord<usize>>>,
+            (height, width) => Box::new(
+                Coord::at(0, 0)
+                    .to(Coord::at(width - 1, 0))
+                    .unwrap()
+                    .chain(
+                        Coord::at(0, height - 1)
+                            .to(Coord::at(width - 1, height - 1))
+                            .unwrap(),
+                    )
+                    .chain(Coord::at(0, 1).to(Coord::at(0, height - 2)).unwrap())
+                    .chain(
+                        Coord::at(width - 1, 1)
+                            .to(Coord::at(width - 1, height - 2))
+                            .unwrap(),
+                    ),
+            ) as Box<dyn Iterator<Item = Coord<usize>>>,
+        }
+    }
+
     /// Returns a [Grid] of the same size as self, with function f applied to each element from top to botom and left to right.
     /// # Example
     ///
