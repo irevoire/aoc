@@ -492,7 +492,7 @@ impl<T> Grid<T> {
         }
     }
 
-    /// Returns a [Grid] of the same size as self, with function f applied to each element from top to botom and left to right.
+    /// Returns a [Grid] of the same size as self, with function f applied to each element.
     /// # Example
     ///
     /// ```
@@ -521,6 +521,49 @@ impl<T> Grid<T> {
             self.data
                 .into_iter()
                 .map(|line| line.into_iter().map(&mut f).collect())
+                .collect(),
+        )
+    }
+
+    /// Returns a [Grid] of the same size as self, with function f applied to each element.
+    /// The function f receive the coordinate + the element.
+    /// # Example
+    ///
+    /// ```
+    /// let mut grid = aoc::Grid::from(vec![
+    ///     vec![1, 2, 3, 4],
+    ///     vec![5, 6, 7, 8],
+    ///     vec![8, 7, 6, 5],
+    ///     vec![4, 3, 2, 1],
+    ///    ]);
+    /// let grid = grid.map_with_coord(|coord, el| match (coord.x, coord.y) {
+    ///         (1..=2, 1..=2) => format!("*{}*", el),
+    ///         _ => el.to_string(),
+    ///     });
+    /// assert_eq!(
+    ///     grid.into_inner(),
+    ///     vec![
+    ///         vec!["1", "2", "3", "4"],
+    ///         vec!["5", "*6*", "*7*", "8"],
+    ///         vec!["8", "*7*", "*6*", "5"],
+    ///         vec!["4", "3", "2", "1"],
+    ///     ],
+    /// );
+    /// ```
+    pub fn map_with_coord<F, U>(self, mut f: F) -> Grid<U>
+    where
+        F: FnMut(Coord<usize>, T) -> U,
+    {
+        Grid::from(
+            self.data
+                .into_iter()
+                .enumerate()
+                .map(|(l, line)| {
+                    line.into_iter()
+                        .enumerate()
+                        .map(|(c, el)| (f)(Coord::at(l, c), el))
+                        .collect()
+                })
                 .collect(),
         )
     }
