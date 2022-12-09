@@ -719,6 +719,40 @@ impl<T: Default + Clone> Grid<T> {
             data: vec![vec![T::default(); col]; line],
         }
     }
+
+    /// Rotate left a [Grid].
+    ///
+    /// ```
+    /// use aoc::Grid;
+    /// let mut grid = aoc::Grid::from(vec![
+    ///     vec![1, 2, 3],
+    ///     vec![4, 5, 6],
+    ///     vec![7, 8, 9],
+    ///    ]);
+    /// grid.rotate_left();
+    ///
+    /// assert_eq!(grid.into_inner(), vec![
+    ///    vec![3, 6, 9],
+    ///    vec![2, 5, 8],
+    ///    vec![1, 4, 7],
+    /// ]);
+    /// ```
+    pub fn rotate_left(&mut self) {
+        if self.iter().count() == 0 {
+            return;
+        }
+        let orig_height = self.height();
+        let orig_width = self.width();
+        let mut new: Self = Grid::with_dimension(orig_height, orig_width);
+
+        for x in 0..orig_height {
+            for y in 0..orig_width {
+                new[(x, y)] = self[(orig_width - y - 1, x)].clone();
+            }
+        }
+
+        *self = new;
+    }
 }
 
 impl<T> std::ops::Index<&Coord<usize>> for Grid<T> {
@@ -832,6 +866,89 @@ mod tests {
                 "Borders failed for the following grid: {}. Got {:?}",
                 grid,
                 borders,
+            );
+        }
+    }
+
+    #[test]
+    fn rotate_left() {
+        #[rustfmt::skip]
+        let grids = vec![
+            (Grid::from(vec![
+                vec![1,  2,  3,  4],
+                vec![9,  0,  0,  11],
+                vec![10, 0,  0,  12],
+                vec![5,  6,  7,  8],
+            ]), Grid::from(
+            vec![
+                vec![4,  11, 12,  8],
+                vec![3,  0,  0,   7],
+                vec![2,  0,  0,   6],
+                vec![1,  9,  10,  5],
+            ])),
+            (Grid::from(vec![
+                vec![1, 2, 3],
+                vec![7, 0, 8],
+                vec![4, 5, 6]
+            ]), Grid::from(vec![
+                vec![3, 8, 6],
+                vec![2, 0, 5],
+                vec![1, 7, 4]
+            ])),
+            (Grid::from(vec![
+                vec![1, 2],
+                vec![5, 6],
+                vec![3, 4]
+            ]), Grid::from(vec![
+                vec![2, 6, 4],
+                vec![1, 5, 3],
+            ])),
+            (Grid::from(vec![
+                vec![1],
+                vec![2],
+                vec![3],
+            ]), Grid::from(vec![
+                vec![1, 2, 3],
+            ])),
+            (Grid::from(vec![
+                vec![1, 2, 3, 4],
+                vec![5, 6, 7, 8],
+            ]), Grid::from(vec![
+                vec![4, 8],
+                vec![3, 7],
+                vec![2, 6],
+                vec![1, 5],
+            ])),
+            (Grid::from(vec![
+                vec![1, 2, 3, 4],
+            ]), Grid::from(vec![
+                vec![4],
+                vec![3],
+                vec![2],
+                vec![1],
+            ])),
+            (Grid::from(vec![
+                vec![1],
+            ]), Grid::from(vec![
+                vec![1],
+            ])),
+            (Grid::from(vec![
+                vec![],
+            ]), Grid::from(vec![
+                vec![],
+            ])),
+        ];
+
+        for (mut grid, expected) in grids {
+            println!("{}", grid);
+            let base = grid.clone();
+            grid.rotate_left();
+            assert!(
+                grid == expected,
+                "\nrotate_left failed for the following grid:\n{}\nGot:\n{}\nExpected:\n{}",
+                base,
+                grid,
+                expected,
             );
         }
     }
