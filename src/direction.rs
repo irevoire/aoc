@@ -1,6 +1,7 @@
 //! Enum to represent a direction on a grid
 
 use anyhow::{bail, Error, Result};
+use std::ops::Add;
 use std::str::FromStr;
 
 /// Represent a direction.
@@ -22,6 +23,19 @@ impl Default for Direction {
 use std::convert::TryFrom;
 
 use crate::Movement;
+
+impl Add<isize> for Direction {
+    type Output = Movement;
+
+    fn add(self, n: isize) -> Self::Output {
+        match self {
+            Direction::North => Movement::North(n),
+            Direction::West => Movement::West(n),
+            Direction::East => Movement::East(n),
+            Direction::South => Movement::South(n),
+        }
+    }
+}
 
 impl TryFrom<Movement> for Direction {
     type Error = anyhow::Error;
