@@ -51,7 +51,8 @@ where
 {
     /// Compute the distance between two coordinates.
     ///
-    /// **Be cautious, we are working on Manhattan distance**
+    /// See also [Coord::chebyshev_distance_from], [Coord::manhattan_distance_from_base].
+    /// # Example
     /// ```
     /// use aoc::Coord;
     ///
@@ -59,10 +60,10 @@ where
     /// let coord = Coord::<isize>::at(1, 1);
     /// let coord2 = Coord::<isize>::at(-1, -1);
     ///
-    /// assert_eq!(orig.distance_from(&coord), 2);
-    /// assert_eq!(orig.distance_from(&coord2), 2);
+    /// assert_eq!(orig.manhattan_distance_from(&coord), 2);
+    /// assert_eq!(orig.manhattan_distance_from(&coord2), 2);
     /// ```
-    pub fn distance_from(&self, other: &Self) -> I {
+    pub fn manhattan_distance_from(&self, other: &Self) -> I {
         let x = if self.x > other.x {
             self.x - other.x
         } else {
@@ -80,18 +81,67 @@ where
 
     /// Compute the distance between from the origin.
     ///
-    /// **Be cautious, we are working on Manhattan distance**
+    /// See also [Coord::manhattan_distance_from], [Coord::chebyshev_distance_from_base].
+    /// # Example
     /// ```
     /// use aoc::Coord;
     ///
     /// let coord = Coord::<isize>::at(1, 1);
     /// let coord2 = Coord::<isize>::at(-1, -1);
     ///
-    /// assert_eq!(coord.distance_from_base(), 2);
-    /// assert_eq!(coord2.distance_from_base(), 2);
+    /// assert_eq!(coord.manhattan_distance_from_base(), 2);
+    /// assert_eq!(coord2.manhattan_distance_from_base(), 2);
     /// ```
-    pub fn distance_from_base(&self) -> I {
-        Coord::default().distance_from(self)
+    pub fn manhattan_distance_from_base(&self) -> I {
+        Coord::default().manhattan_distance_from(self)
+    }
+
+    /// Compute the distance between two coordinates.
+    ///
+    /// See also [Coord::manhattan_distance_from], [Coord::chebyshev_distance_from_base].
+    /// # Example
+    /// ```
+    /// use aoc::Coord;
+    ///
+    /// let orig = Coord::default();
+    /// let coord = Coord::<isize>::at(1, 1);
+    /// let coord2 = Coord::<isize>::at(-1, -1);
+    ///
+    /// assert_eq!(orig.chebyshev_distance_from(&coord), 1);
+    /// assert_eq!(orig.chebyshev_distance_from(&coord2), 1);
+    /// assert_eq!(coord.chebyshev_distance_from(&coord2), 2);
+    /// ```
+    pub fn chebyshev_distance_from(&self, other: &Self) -> I {
+        let x = if self.x > other.x {
+            self.x - other.x
+        } else {
+            other.x - self.x
+        };
+
+        let y = if self.y > other.y {
+            self.y - other.y
+        } else {
+            other.y - self.y
+        };
+
+        x.max(y)
+    }
+
+    /// Compute the distance between from the origin.
+    ///
+    /// See also [Coord::chebyshev_distance_from], [Coord::manhattan_distance_from_base].
+    /// # Example
+    /// ```
+    /// use aoc::Coord;
+    ///
+    /// let coord = Coord::<isize>::at(1, 1);
+    /// let coord2 = Coord::<isize>::at(-1, -1);
+    ///
+    /// assert_eq!(coord.chebyshev_distance_from_base(), 2);
+    /// assert_eq!(coord2.chebyshev_distance_from_base(), 2);
+    /// ```
+    pub fn chebyshev_distance_from_base(&self) -> I {
+        Coord::default().manhattan_distance_from(self)
     }
 }
 
@@ -135,6 +185,42 @@ where
         } else if self.y > target.y {
             self.y = self.y - I::one();
         }
+    }
+
+    /// Indicate if two points are adjacent with a manhattan distance.
+    ///
+    /// See also [Coord::manhattan_distance_from], [Coord::chebyshev_adjacent].
+    /// # Example
+    /// ```
+    /// use aoc::Coord;
+    ///
+    /// let coord = Coord::<isize>::at(1, 0);
+    /// let coord2 = Coord::<isize>::at(-1, 0);
+    ///
+    /// assert_eq!(coord.manhattan_adjacent(&Coord::default()), true);
+    /// assert_eq!(coord2.manhattan_adjacent(&Coord::default()), true);
+    /// assert_eq!(coord.manhattan_adjacent(&coord2), false);
+    /// ```
+    pub fn manhattan_adjacent(&self, other: &Self) -> bool {
+        self.chebyshev_distance_from(other) == I::one()
+    }
+
+    /// Indicate if two points are adjacent with a chebyshev distance.
+    ///
+    /// See also [Coord::chebyshev_distance_from], [Coord::manhattan_adjacent].
+    /// # Example
+    /// ```
+    /// use aoc::Coord;
+    ///
+    /// let coord = Coord::<isize>::at(1, 1);
+    /// let coord2 = Coord::<isize>::at(-1, -1);
+    ///
+    /// assert_eq!(coord.chebyshev_adjacent(&Coord::default()), true);
+    /// assert_eq!(coord2.chebyshev_adjacent(&Coord::default()), true);
+    /// assert_eq!(coord.chebyshev_adjacent(&coord2), false);
+    /// ```
+    pub fn chebyshev_adjacent(&self, other: &Self) -> bool {
+        self.chebyshev_distance_from(other) == I::one()
     }
 }
 
@@ -615,7 +701,7 @@ mod tests {
 
     #[test]
     fn test_move_toward() {
-        for coord in Coord::at(-1, 1).to(Coord::at(1, -1)).unwrap() {
+        for coord in Coord::at(-1, -1).to(Coord::at(1, 1)).unwrap() {
             let mut base = Coord::default();
 
             base.move_toward(&coord);

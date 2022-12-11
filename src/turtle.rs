@@ -17,11 +17,11 @@ impl Turtle {
     }
 
     pub fn distance_from(&self, coord: &Coord<isize>) -> isize {
-        self.coord.distance_from(coord)
+        self.coord.manhattan_distance_from(coord)
     }
 
     pub fn distance_from_base(&self) -> isize {
-        self.coord.distance_from_base()
+        self.coord.manhattan_distance_from_base()
     }
 }
 

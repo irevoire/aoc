@@ -14,7 +14,7 @@ pub struct Grid<T = usize> {
 impl<T> Grid<T> {
     /// Create an empty [Grid].
     ///
-    /// See also [Grid::from, Grid::with_capacity].
+    /// See also [Grid::from], [Grid::with_capacity].
     /// # Example
     ///
     /// ```
