@@ -95,6 +95,49 @@ where
     }
 }
 
+impl<I> Coord<I>
+where
+    I: ops::Sub<Output = I> + ops::Add<Output = I> + num::One + Ord + Copy + Default,
+{
+    /// Move toward the other coord in one Manhattan step.
+    ///
+    /// If the coord is in the `o` position it can move on any `#` position.
+    ///
+    /// ```no_rust
+    /// .........
+    /// ...###...
+    /// ...#o#...
+    /// ...###...
+    /// .........
+    /// ```
+    ///
+    /// ```
+    /// use aoc::Coord;
+    ///
+    /// let mut coord = Coord::<isize>::at(0, 0);
+    ///
+    /// coord.move_toward(&Coord::at(0, 0));
+    /// assert_eq!(coord, Coord::at(0, 0));
+    ///
+    /// let mut coord = Coord::default();
+    /// coord.move_toward(&Coord::at(-10, -10));
+    /// assert_eq!(coord, Coord::at(-1, -1));
+    /// ```
+    pub fn move_toward(&mut self, target: &Self) {
+        if self.x < target.x {
+            self.x = self.x + I::one();
+        } else if self.x > target.x {
+            self.x = self.x - I::one();
+        }
+
+        if self.y < target.y {
+            self.y = self.y + I::one();
+        } else if self.y > target.y {
+            self.y = self.y - I::one();
+        }
+    }
+}
+
 impl<I: Ord + Clone + fmt::Debug> Coord<I> {
     /// Generate an iterator from a point to another.
     /// The fonction will return an error if the starting point is before the ending point.
@@ -568,5 +611,32 @@ mod tests {
         c.x = 2;
         c.y = 3;
         assert_eq!(c, Into::<Coord<u32>>::into((2_u32, 3_u32)));
+    }
+
+    #[test]
+    fn test_move_toward() {
+        for coord in Coord::at(-1, 1).to(Coord::at(1, -1)).unwrap() {
+            let mut base = Coord::default();
+
+            base.move_toward(&coord);
+            assert_eq!(base, coord);
+        }
+
+        // does it work with a more than 1 distance
+        let mut coord = Coord::default();
+        coord.move_toward(&Coord::at(10, 0));
+        assert_eq!(coord, Coord::at(1, 0));
+
+        let mut coord = Coord::default();
+        coord.move_toward(&Coord::at(-10, 0));
+        assert_eq!(coord, Coord::at(-1, 0));
+
+        let mut coord = Coord::default();
+        coord.move_toward(&Coord::at(-10, -10));
+        assert_eq!(coord, Coord::at(-1, -1));
+
+        let mut coord = Coord::default();
+        coord.move_toward(&Coord::at(10, 10));
+        assert_eq!(coord, Coord::at(1, 1));
     }
 }
