@@ -789,6 +789,30 @@ impl<T> Grid<T> {
             Some(&mut self[coord])
         }
     }
+
+    /// Return the `Coord`inates of a value.
+    ///
+    /// # Example
+    /// ```
+    /// let mut grid = aoc::Grid::from(vec![
+    ///     vec![0, 0, 0, 0, 0],
+    ///     vec![0, 0, 1, 2, 0],
+    ///     vec![0, 0, 0, 1, 0],
+    ///     vec![0, 0, 1, 0, 0],
+    ///     vec![0, 0, 0, 0, 0],
+    ///     vec![0, 0, 0, 0, 0],
+    ///    ]);
+    /// let position = grid.position(|&el| el == 2);
+    /// assert_eq!(
+    ///     position,
+    ///     Some(aoc::Coord::at(3, 1))
+    /// );
+    /// ```
+    pub fn position(&self, check: impl Fn(&T) -> bool) -> Option<Coord<usize>> {
+        self.enumerate()
+            .find(|(_coord, value)| check(value))
+            .map(|(coord, _value)| coord)
+    }
 }
 
 impl<T: Default + Clone> Grid<T> {
