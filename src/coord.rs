@@ -197,12 +197,12 @@ where
     /// let coord = Coord::<isize>::at(1, 0);
     /// let coord2 = Coord::<isize>::at(-1, 0);
     ///
-    /// assert_eq!(coord.manhattan_adjacent(&Coord::default()), true);
-    /// assert_eq!(coord2.manhattan_adjacent(&Coord::default()), true);
-    /// assert_eq!(coord.manhattan_adjacent(&coord2), false);
+    /// assert_eq!(coord.is_manhattan_adjacent(&Coord::default()), true);
+    /// assert_eq!(coord2.is_manhattan_adjacent(&Coord::default()), true);
+    /// assert_eq!(coord.is_manhattan_adjacent(&coord2), false);
     /// ```
-    pub fn manhattan_adjacent(&self, other: &Self) -> bool {
-        self.chebyshev_distance_from(other) == I::one()
+    pub fn is_manhattan_adjacent(&self, other: &Self) -> bool {
+        self.manhattan_distance_from(other) == I::one()
     }
 
     /// Indicate if two points are adjacent with a chebyshev distance.
@@ -215,12 +215,95 @@ where
     /// let coord = Coord::<isize>::at(1, 1);
     /// let coord2 = Coord::<isize>::at(-1, -1);
     ///
-    /// assert_eq!(coord.chebyshev_adjacent(&Coord::default()), true);
-    /// assert_eq!(coord2.chebyshev_adjacent(&Coord::default()), true);
-    /// assert_eq!(coord.chebyshev_adjacent(&coord2), false);
+    /// assert_eq!(coord.is_chebyshev_adjacent(&Coord::default()), true);
+    /// assert_eq!(coord2.is_chebyshev_adjacent(&Coord::default()), true);
+    /// assert_eq!(coord.is_chebyshev_adjacent(&coord2), false);
     /// ```
-    pub fn chebyshev_adjacent(&self, other: &Self) -> bool {
+    pub fn is_chebyshev_adjacent(&self, other: &Self) -> bool {
         self.chebyshev_distance_from(other) == I::one()
+    }
+}
+
+impl<I> Coord<I>
+where
+    I: ops::Sub<Output = I> + ops::Add<Output = I> + num::One + num::CheckedOp + Copy,
+{
+    /// Returns an iterator over all the adjacent position.
+    ///
+    /// See also [Coord::is_manhattan_adjacent], [Coord::chebyshev_adjacent].
+    /// # Example
+    /// ```
+    /// use aoc::Coord;
+    ///
+    /// let mut coords = Coord::<isize>::at(0, 0).manhattan_adjacent();
+    ///
+    /// assert_eq!(coords.next(), Some(Coord::at(-1, 0)));
+    /// assert_eq!(coords.next(), Some(Coord::at(1, 0)));
+    /// assert_eq!(coords.next(), Some(Coord::at(0, -1)));
+    /// assert_eq!(coords.next(), Some(Coord::at(0, 1)));
+    /// assert_eq!(coords.next(), None);
+    /// ```
+    pub fn manhattan_adjacent(&self) -> impl Iterator<Item = Coord<I>> {
+        let ret = [
+            self.x.checked_sub(I::one()).map(|x| Coord::at(x, self.y)),
+            self.x.checked_add(I::one()).map(|x| Coord::at(x, self.y)),
+            self.y.checked_sub(I::one()).map(|y| Coord::at(self.x, y)),
+            self.y.checked_add(I::one()).map(|y| Coord::at(self.x, y)),
+        ];
+
+        ret.into_iter().filter_map(|s| s)
+    }
+
+    /// Returns an iterator over all the adjacent position.
+    ///
+    /// See also [Coord::is_manhattan_adjacent], [Coord::chebyshev_adjacent].
+    /// # Example
+    /// ```
+    /// use aoc::Coord;
+    ///
+    /// let mut coords = Coord::<isize>::at(0, 0).chebyshev_adjacent();
+    ///
+    /// // top row
+    /// assert_eq!(coords.next(), Some(Coord::at(-1, 1)));
+    /// assert_eq!(coords.next(), Some(Coord::at(0, 1)));
+    /// assert_eq!(coords.next(), Some(Coord::at(1, 1)));
+    /// // middle row
+    /// assert_eq!(coords.next(), Some(Coord::at(-1, 0)));
+    /// assert_eq!(coords.next(), Some(Coord::at(1, 0)));
+    /// // bottom row
+    /// assert_eq!(coords.next(), Some(Coord::at(-1, -1)));
+    /// assert_eq!(coords.next(), Some(Coord::at(0, -1)));
+    /// assert_eq!(coords.next(), Some(Coord::at(1, -1)));
+    /// assert_eq!(coords.next(), None);
+    /// ```
+    pub fn chebyshev_adjacent(&self) -> impl Iterator<Item = Coord<I>> {
+        let ret = [
+            // top row
+            self.x
+                .checked_sub(I::one())
+                .zip(self.y.checked_add(I::one()))
+                .map(|(x, y)| Coord::at(x, y)),
+            self.y.checked_add(I::one()).map(|y| Coord::at(self.x, y)),
+            self.x
+                .checked_add(I::one())
+                .zip(self.y.checked_add(I::one()))
+                .map(|(x, y)| Coord::at(x, y)),
+            // middle row
+            self.x.checked_sub(I::one()).map(|x| Coord::at(x, self.y)),
+            self.x.checked_add(I::one()).map(|x| Coord::at(x, self.y)),
+            // top bottom
+            self.x
+                .checked_sub(I::one())
+                .zip(self.y.checked_sub(I::one()))
+                .map(|(x, y)| Coord::at(x, y)),
+            self.y.checked_sub(I::one()).map(|y| Coord::at(self.x, y)),
+            self.x
+                .checked_add(I::one())
+                .zip(self.y.checked_sub(I::one()))
+                .map(|(x, y)| Coord::at(x, y)),
+        ];
+
+        ret.into_iter().filter_map(|s| s)
     }
 }
 
