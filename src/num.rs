@@ -1,3 +1,21 @@
+use std::ops::Range;
+
+pub trait Zero {
+    fn zero() -> Self;
+}
+
+macro_rules! impl_zero {
+    ($t:ty) => {
+        impl Zero for $t {
+            fn zero() -> Self {
+                0 as $t
+            }
+        }
+    };
+}
+
+crate::impl_for_primitive!(impl_zero: unsigned, signed, float);
+
 pub trait One {
     fn one() -> Self;
 }
@@ -56,5 +74,35 @@ where
 {
     fn distance(self, other: Self) -> Self {
         self.max(other) - self.min(other)
+    }
+}
+
+pub trait Pattern {
+    type N;
+
+    fn matches(&self, n: Self::N) -> bool;
+}
+
+impl Pattern for Range<isize> {
+    type N = isize;
+
+    fn matches(&self, n: Self::N) -> bool {
+        self.contains(&n)
+    }
+}
+
+impl Pattern for isize {
+    type N = isize;
+
+    fn matches(&self, n: Self::N) -> bool {
+        *self == n
+    }
+}
+
+impl Pattern for fn(isize) -> bool {
+    type N = isize;
+
+    fn matches(&self, n: Self::N) -> bool {
+        self(n)
     }
 }

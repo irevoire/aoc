@@ -3,6 +3,8 @@
 
 use crate::{direction, num, range};
 use anyhow::Result;
+use std::cmp::Reverse;
+use std::collections::HashSet;
 use std::str::FromStr;
 use std::{cmp, fmt, ops};
 
@@ -331,6 +333,102 @@ impl<I: Ord + Clone + fmt::Debug> Coord<I> {
     /// ```
     pub fn to(self, end: Self) -> Result<range::Range<I>> {
         range::Range::new(self, end)
+    }
+}
+
+impl<I> Coord<I>
+where
+    I: ops::Sub<Output = I>
+        + ops::Add<Output = I>
+        + std::hash::Hash
+        + num::Zero
+        + num::One
+        + num::CheckedOp
+        + Eq
+        + Ord
+        + Default
+        + Copy,
+{
+    /// Returns a `Vec` of `Coord` at a distance of exactly `distance` from the starting point.
+    ///
+    /// If `self` is `S`, then, with a distance of 2, this function returns all the point in the `#` coordinates.
+    /// ```text
+    /// . . . . . . .
+    /// . . . # . . .
+    /// . . # . # . .
+    /// . # . S . # .
+    /// . . # . # . .
+    /// . . . # . . .
+    /// . . . . . . .
+    /// ```
+    pub fn manhattan_coords_at_distance(&self, distance: I) -> Vec<Coord<I>> {
+        let mut ret = Vec::new();
+        let mut explored = HashSet::new();
+        let mut to_explore = vec![(self.clone(), I::zero())];
+
+        loop {
+            to_explore.sort_by(|(_, left), (_, right)| Reverse(left).cmp(&Reverse(right)));
+
+            if let Some((current, curr_dist)) = to_explore.pop() {
+                explored.insert(current);
+                if curr_dist == distance {
+                    ret.push(current);
+                }
+                to_explore.extend(
+                    current
+                        .manhattan_adjacent()
+                        .filter(|coord| !explored.contains(coord))
+                        .map(|c| (c, curr_dist + I::one()))
+                        .filter(|(_, d)| *d <= distance),
+                );
+            } else {
+                break;
+            }
+        }
+
+        ret
+    }
+
+    /// Returns a `Vec` of `Coord` at a distance of exactly `distance` from the starting point.
+    ///
+    /// If `self` is `S`, then, with a distance of 2, this function returns all the point in the `#` coordinates.
+    /// ```text
+    /// . . . . . . .
+    /// . # # # # # .
+    /// . # . . . # .
+    /// . # . . . # .
+    /// . # . . . # .
+    /// . # # # # # .
+    /// . . . . . . .
+    /// ```
+    pub fn chebyshev_coords_at_distance(&self, distance: I) -> Vec<Coord<I>> {
+        let mut ret = Vec::new();
+        let mut explored = HashSet::new();
+        let mut to_explore = vec![(self.clone(), I::zero())];
+
+        loop {
+            to_explore.sort_by(|(_, left), (_, right)| Reverse(left).cmp(&Reverse(right)));
+
+            if let Some((current, curr_dist)) = to_explore.pop() {
+                explored.insert(current);
+                if curr_dist == distance {
+                    ret.push(current);
+                }
+                to_explore.extend(
+                    current
+                        .chebyshev_adjacent()
+                        .filter(|coord| !explored.contains(coord))
+                        .map(|c| (c, curr_dist + I::one()))
+                        .filter(|(_, d)| *d <= distance),
+                );
+            } else {
+                break;
+            }
+        }
+
+        ret.into_iter()
+            .filter(|coord| !(self.chebyshev_distance_from(coord) != distance))
+            .collect()
     }
 }
 
@@ -758,7 +856,41 @@ where
 
 #[cfg(test)]
 mod tests {
+    use crate::Grid;
+
     use super::*;
+
+    fn visualize(coords: impl IntoIterator<Item = Coord<isize>>) -> String {
+        let mut coords = coords.into_iter().collect::<Vec<_>>();
+
+        let min_x = coords.iter().map(|coord| coord.x).min().unwrap();
+        let min_y = coords.iter().map(|coord| coord.y).min().unwrap();
+
+        if min_x <= 0 {
+            let inc = min_x.abs();
+            coords.iter_mut().for_each(|coord| coord.x += inc + 1);
+        }
+        if min_y <= 0 {
+            let inc = min_y.abs();
+            coords.iter_mut().for_each(|coord| coord.y += inc + 1);
+        }
+        let coords = coords
+            .into_iter()
+            .map(|Coord { x, y }| Coord::at(x as usize, y as usize))
+            .collect::<Vec<_>>();
+
+        let max_x = coords.iter().map(|coord| coord.x).max().unwrap();
+        let max_y = coords.iter().map(|coord| coord.y).max().unwrap();
+
+        let grid = Grid::<char>::with_dimension(max_x + 2, max_y + 2);
+        let mut grid = grid.map(|_| '.');
+
+        for coord in coords {
+            grid[coord] = '#';
+        }
+
+        format!("{}", grid)
+    }
 
     #[test]
     fn test_deref() {
@@ -807,5 +939,87 @@ mod tests {
         let mut coord = Coord::default();
         coord.move_toward(&Coord::at(10, 10));
         assert_eq!(coord, Coord::at(1, 1));
+    }
+
+    #[test]
+    fn test_manhattan_coords_at_distance() {
+        let coord = Coord::at(0, 0);
+
+        insta::assert_snapshot!(visualize(coord.manhattan_coords_at_distance(0)), @r###"
+        . . . 
+        . # . 
+        . . . 
+        "###);
+
+        insta::assert_snapshot!(visualize(coord.manhattan_coords_at_distance(1)), @r###"
+        . . . . . 
+        . . # . . 
+        . # . # . 
+        . . # . . 
+        . . . . . 
+        "###);
+
+        insta::assert_snapshot!(visualize(coord.manhattan_coords_at_distance(2)), @r###"
+        . . . . . . . 
+        . . . # . . . 
+        . . # . # . . 
+        . # . . . # . 
+        . . # . # . . 
+        . . . # . . . 
+        . . . . . . . 
+        "###);
+
+        insta::assert_snapshot!(visualize(coord.manhattan_coords_at_distance(3)), @r###"
+        . . . . . . . . . 
+        . . . . # . . . . 
+        . . . # . # . . . 
+        . . # . . . # . . 
+        . # . . . . . # . 
+        . . # . . . # . . 
+        . . . # . # . . . 
+        . . . . # . . . . 
+        . . . . . . . . . 
+        "###);
+    }
+
+    #[test]
+    fn test_chebyshev_coords_at_distance() {
+        let coord = Coord::at(0, 0);
+
+        insta::assert_snapshot!(visualize(coord.chebyshev_coords_at_distance(0)), @r###"
+        . . . 
+        . # . 
+        . . . 
+        "###);
+
+        insta::assert_snapshot!(visualize(coord.chebyshev_coords_at_distance(1)), @r###"
+        . . . . . 
+        . # # # . 
+        . # . # . 
+        . # # # . 
+        . . . . . 
+        "###);
+
+        insta::assert_snapshot!(visualize(coord.chebyshev_coords_at_distance(2)), @r###"
+        . . . . . . . 
+        . # # # # # . 
+        . # . . . # . 
+        . # . . . # . 
+        . # . . . # . 
+        . # # # # # . 
+        . . . . . . . 
+        "###);
+
+        insta::assert_snapshot!(visualize(coord.chebyshev_coords_at_distance(3)), @r###"
+        . . . . . . . . . 
+        . # # # # # # # . 
+        . # . . . . . # . 
+        . # . . . . . # . 
+        . # . . . . . # . 
+        . # . . . . . # . 
+        . # . . . . . # . 
+        . # # # # # # # . 
+        . . . . . . . . . 
+        "###);
     }
 }
