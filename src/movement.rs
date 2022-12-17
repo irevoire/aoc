@@ -77,13 +77,7 @@ impl Movement {
             Left(n) if n < 0 => Left(-1),
             Forward(n) if n > 0 => Forward(1),
             Forward(n) if n < 0 => Forward(-1),
-            el @ North(0)
-            | el @ East(0)
-            | el @ West(0)
-            | el @ South(0)
-            | el @ Right(0)
-            | el @ Left(0)
-            | el @ Forward(0) => el,
+            North(0) | East(0) | West(0) | South(0) | Right(0) | Left(0) | Forward(0) => self,
             el => panic!("This should not happens: {:?}", el),
         }
     }

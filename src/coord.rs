@@ -142,7 +142,7 @@ where
     /// assert_eq!(coord2.chebyshev_distance_from_base(), 2);
     /// ```
     pub fn chebyshev_distance_from_base(&self) -> I {
-        Coord::default().manhattan_distance_from(self)
+        Coord::default().chebyshev_distance_from(self)
     }
 }
 
