@@ -229,6 +229,46 @@ impl<I> Coord<I>
 where
     I: ops::Sub<Output = I> + ops::Add<Output = I> + num::One + num::CheckedOp + Copy,
 {
+    /// Returns an iterator over the diagonal coordinates.
+    ///
+    /// See also [Coord::is_manhattan_adjacent], [Coord::chebyshev_adjacent].
+    /// # Example
+    /// ```
+    /// use aoc::Coord;
+    ///
+    /// let mut coords = Coord::<isize>::at(0, 0).diagonal();
+    ///
+    /// assert_eq!(coords.next(), Some(Coord::at(-1, 1)));
+    /// assert_eq!(coords.next(), Some(Coord::at(1, 1)));
+    /// assert_eq!(coords.next(), Some(Coord::at(-1, -1)));
+    /// assert_eq!(coords.next(), Some(Coord::at(1, -1)));
+    /// assert_eq!(coords.next(), None);
+    /// ```
+    pub fn diagonal(&self) -> impl Iterator<Item = Coord<I>> {
+        let ret = [
+            // top row
+            self.x
+                .checked_sub(I::one())
+                .zip(self.y.checked_add(I::one()))
+                .map(|(x, y)| Coord::at(x, y)),
+            self.x
+                .checked_add(I::one())
+                .zip(self.y.checked_add(I::one()))
+                .map(|(x, y)| Coord::at(x, y)),
+            // top bottom
+            self.x
+                .checked_sub(I::one())
+                .zip(self.y.checked_sub(I::one()))
+                .map(|(x, y)| Coord::at(x, y)),
+            self.x
+                .checked_add(I::one())
+                .zip(self.y.checked_sub(I::one()))
+                .map(|(x, y)| Coord::at(x, y)),
+        ];
+
+        ret.into_iter().filter_map(|s| s)
+    }
+
     /// Returns an iterator over all the adjacent position.
     ///
     /// See also [Coord::is_manhattan_adjacent], [Coord::chebyshev_adjacent].
@@ -371,7 +411,7 @@ where
                 ret.push(current);
                 to_explore.extend(
                     current
-                        .chebyshev_adjacent()
+                        .diagonal()
                         .filter(|coord| !explored.contains(coord))
                         .filter(|coord| self.manhattan_distance_from(coord) == distance),
                 );
@@ -406,7 +446,7 @@ where
                 ret.push(current);
                 to_explore.extend(
                     current
-                        .chebyshev_adjacent()
+                        .manhattan_adjacent()
                         .filter(|coord| !explored.contains(coord))
                         .filter(|coord| self.chebyshev_distance_from(coord) == distance),
                 );
