@@ -3,7 +3,6 @@
 
 use crate::{direction, num, range};
 use anyhow::Result;
-use std::cmp::Reverse;
 use std::collections::HashSet;
 use std::str::FromStr;
 use std::{cmp, fmt, ops};
@@ -364,22 +363,17 @@ where
     pub fn manhattan_coords_at_distance(&self, distance: I) -> Vec<Coord<I>> {
         let mut ret = Vec::new();
         let mut explored = HashSet::new();
-        let mut to_explore = vec![(self.clone(), I::zero())];
+        let mut to_explore = vec![(self.clone() + Coord::at(I::zero(), distance))];
 
         loop {
-            to_explore.sort_by(|(_, left), (_, right)| Reverse(left).cmp(&Reverse(right)));
-
-            if let Some((current, curr_dist)) = to_explore.pop() {
+            if let Some(current) = to_explore.pop() {
                 explored.insert(current);
-                if curr_dist == distance {
-                    ret.push(current);
-                }
+                ret.push(current);
                 to_explore.extend(
                     current
-                        .manhattan_adjacent()
+                        .chebyshev_adjacent()
                         .filter(|coord| !explored.contains(coord))
-                        .map(|c| (c, curr_dist + I::one()))
-                        .filter(|(_, d)| *d <= distance),
+                        .filter(|coord| self.manhattan_distance_from(coord) == distance),
                 );
             } else {
                 break;
@@ -404,31 +398,24 @@ where
     pub fn chebyshev_coords_at_distance(&self, distance: I) -> Vec<Coord<I>> {
         let mut ret = Vec::new();
         let mut explored = HashSet::new();
-        let mut to_explore = vec![(self.clone(), I::zero())];
+        let mut to_explore = vec![(self.clone() + Coord::at(I::zero(), distance))];
 
         loop {
-            to_explore.sort_by(|(_, left), (_, right)| Reverse(left).cmp(&Reverse(right)));
-
-            if let Some((current, curr_dist)) = to_explore.pop() {
+            if let Some(current) = to_explore.pop() {
                 explored.insert(current);
-                if curr_dist == distance {
-                    ret.push(current);
-                }
+                ret.push(current);
                 to_explore.extend(
                     current
                         .chebyshev_adjacent()
                         .filter(|coord| !explored.contains(coord))
-                        .map(|c| (c, curr_dist + I::one()))
-                        .filter(|(_, d)| *d <= distance),
+                        .filter(|coord| self.chebyshev_distance_from(coord) == distance),
                 );
             } else {
                 break;
             }
         }
 
-        ret.into_iter()
-            .filter(|coord| !(self.chebyshev_distance_from(coord) != distance))
-            .collect()
+        ret
     }
 }
 
