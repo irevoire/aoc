@@ -1,6 +1,7 @@
 mod coord;
 mod cyclic_list;
 mod direction;
+mod graph;
 mod grid;
 pub mod iterator;
 pub mod macros;
@@ -13,6 +14,7 @@ mod turtle;
 pub use coord::Coord;
 pub use cyclic_list::CyclicList;
 pub use direction::Direction;
+pub use graph::{Directed, Graph, Id, Undirected};
 pub use grid::Grid;
 pub use movement::Movement;
 pub use range::Range;
@@ -25,6 +27,7 @@ pub use indicatif;
 pub use indicatif::{ParallelProgressIterator, ProgressIterator};
 pub use itertools;
 pub use itertools::Itertools;
+pub use rand;
 pub use rayon::prelude::*;
 pub use termion;
 

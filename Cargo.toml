@@ -15,6 +15,7 @@ termion = "1.5.6"
 itertools = "0.10.1"
 indicatif = { version = "0.16.2", features = ["rayon"] }
 im = "15.1.0"
+rand = "0.8.5"
 
 [workspace]
 members = ["markdown"]
