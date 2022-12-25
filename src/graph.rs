@@ -101,6 +101,18 @@ where
         }
     }
 
+    pub fn generate_cache(&self) -> HashMap<(Id, Id), usize> {
+        let mut map = HashMap::new();
+        for left in 0..self.nodes.len() {
+            for right in 0..self.nodes.len() {
+                if let Some(distance) = self.distance_between(left, right) {
+                    map.insert((left, right), distance);
+                }
+            }
+        }
+        map
+    }
+
     /// Iterate over all the node in the graph with no defined order
     pub fn values(&self) -> impl Iterator<Item = &Value> {
         self.nodes.iter().filter_map(|v| v.as_ref())

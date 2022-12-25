@@ -868,6 +868,11 @@ impl<T: Default + Clone> Grid<T> {
 
         *self = new;
     }
+
+    pub fn horizontal_symmetry(&mut self) {
+        let data = std::mem::take(&mut self.data);
+        self.data = data.into_iter().rev().collect();
+    }
 }
 
 impl<T> std::ops::Index<&Coord<usize>> for Grid<T> {
