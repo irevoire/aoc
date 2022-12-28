@@ -138,8 +138,8 @@ where
     /// let coord = Coord::<isize>::at(1, 1);
     /// let coord2 = Coord::<isize>::at(-1, -1);
     ///
-    /// assert_eq!(coord.chebyshev_distance_from_base(), 2);
-    /// assert_eq!(coord2.chebyshev_distance_from_base(), 2);
+    /// assert_eq!(coord.chebyshev_distance_from_base(), 1);
+    /// assert_eq!(coord2.chebyshev_distance_from_base(), 1);
     /// ```
     pub fn chebyshev_distance_from_base(&self) -> I {
         Coord::default().chebyshev_distance_from(self)

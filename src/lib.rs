@@ -9,6 +9,8 @@ mod movement;
 pub mod num;
 pub mod parser;
 mod range;
+mod shape;
+mod space;
 mod turtle;
 
 pub use coord::Coord;
@@ -18,6 +20,8 @@ pub use graph::{Directed, Graph, Id, Undirected};
 pub use grid::Grid;
 pub use movement::Movement;
 pub use range::Range;
+pub use shape::Shape;
+pub use space::Space;
 pub use turtle::Turtle;
 
 pub use anyhow::*;
