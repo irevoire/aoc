@@ -9,9 +9,7 @@ struct State {
 }
 
 fn main() {
-    let filename = std::env::args()
-        .skip(1) // Skiping the name of the binary
-        .next();
+    let filename = std::env::args().nth(1);
 
     let mut html = String::new();
     match filename {
@@ -24,7 +22,6 @@ fn main() {
             io::stdin()
                 .read_to_string(&mut html)
                 .expect("Can’t read in stdin");
-            ()
         }
     }
 
@@ -76,10 +73,10 @@ fn handle_open(state: &mut State, node: &Node) {
             state.small_code = true;
         }
         "pre" => {
-            print!("```\n");
+            println!("```");
             state.code = true;
         }
-        "ul" => print!("\n"),
+        "ul" => println!(),
         "li" => print!("- "),
         el => panic!("Unknown open element: {:?}", el),
     }
@@ -98,7 +95,7 @@ fn handle_close(state: &mut State, node: &Node) {
                 print!("\n```\n");
                 state.code = false;
             }
-            "code" if state.code == false => {
+            "code" if !state.code => {
                 print!("`");
                 state.small_code = false;
             }
@@ -107,14 +104,14 @@ fn handle_close(state: &mut State, node: &Node) {
     } else {
         match el.name() {
             "article" => (),
-            "h2" => print!("\n"),
+            "h2" => println!(),
             "p" => print!("\n\n"),
             "a" => print!("]({}) ", el.attr("href").unwrap_or("invalid link")),
             "span" => print!("* "),
             "em" => print!("** "),
             "code" => print!("`"),
-            "ul" => print!("\n"),
-            "li" => print!("\n"),
+            "ul" => println!(),
+            "li" => println!(),
             el => panic!("Unknown close element: {:?}", el),
         }
     }

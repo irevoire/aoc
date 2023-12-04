@@ -74,7 +74,7 @@ where
 
     /// O(edges)
     pub fn delete_by_value(&mut self, value: &Value) -> bool {
-        self.delete_value(self.get_id(&value).unwrap())
+        self.delete_value(self.get_id(value).unwrap())
     }
 
     /// Dijkstra
@@ -92,7 +92,7 @@ where
                 to_explore.extend(
                     self.edges[current]
                         .iter()
-                        .filter(|(id, _)| !explored.contains(&id))
+                        .filter(|(id, _)| !explored.contains(id))
                         .map(|(id, _)| (*id, distance + 1)),
                 );
             } else {
@@ -133,10 +133,10 @@ where
     }
 
     pub fn create_edge_with_data(&mut self, a: Id, b: Id, metadata: Edge) {
-        if self.edges[a].iter().find(|(id, _)| b == *id).is_none() {
+        if self.edges[a].iter().all(|(id, _)| b != *id) {
             self.edges[a].push((b, metadata.clone()));
         }
-        if self.edges[b].iter().find(|(id, _)| a == *id).is_none() {
+        if self.edges[b].iter().all(|(id, _)| a != *id) {
             self.edges[b].push((a, metadata));
         }
     }
@@ -184,7 +184,7 @@ impl<Value, Edge> Graph<Value, Edge, Directed> {
     }
 
     pub fn create_edge_with_data(&mut self, a: Id, b: Id, metadata: Edge) {
-        if self.edges[a].iter().find(|(id, _)| b == *id).is_none() {
+        if self.edges[a].iter().all(|(id, _)| b != *id) {
             self.edges[a].push((b, metadata));
         }
     }
@@ -283,7 +283,7 @@ mod test {
                     );
                     let node = self.nodes[*id].as_ref().unwrap();
                     assert_eq!(
-                        self.nodes_ids.get(&node).unwrap(),
+                        self.nodes_ids.get(node).unwrap(),
                         id,
                         "An edge points to an unexisting node"
                     );
@@ -315,7 +315,7 @@ mod test {
                     );
                     let node = self.nodes[*eid].as_ref().unwrap();
                     assert_eq!(
-                        self.nodes_ids.get(&node).unwrap(),
+                        self.nodes_ids.get(node).unwrap(),
                         eid,
                         "An edge points to an unexisting node"
                     );
