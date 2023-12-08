@@ -53,6 +53,11 @@ where
         self.nodes_ids.get(value).copied()
     }
 
+    /// O(1)
+    pub fn get_edges(&self, id: Id) -> &[(Id, Edge)] {
+        &self.edges[id]
+    }
+
     /// O(edges)
     pub fn delete_value(&mut self, id: Id) -> bool {
         debug_assert!(id < self.nodes.len());
@@ -184,9 +189,7 @@ impl<Value, Edge> Graph<Value, Edge, Directed> {
     }
 
     pub fn create_edge_with_data(&mut self, a: Id, b: Id, metadata: Edge) {
-        if self.edges[a].iter().all(|(id, _)| b != *id) {
-            self.edges[a].push((b, metadata));
-        }
+        self.edges[a].push((b, metadata));
     }
 }
 
