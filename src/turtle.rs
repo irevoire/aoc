@@ -34,27 +34,27 @@ impl Add<Movement> for Turtle {
             (Movement::West(n), _) => self.coord.x -= n,
             (Movement::East(n), _) => self.coord.x += n,
             (Movement::South(n), _) => self.coord.y += n,
-            (Movement::Right(n), Direction::North)
-            | (Movement::Left(n), Direction::South)
-            | (Movement::Forward(n), Direction::East) => {
+            (Movement::Right(n), Direction::North | Direction::Up)
+            | (Movement::Left(n), Direction::South | Direction::Down)
+            | (Movement::Forward(n), Direction::East | Direction::Right) => {
                 self.facing = Direction::East;
                 self.coord.x += n;
             }
-            (Movement::Left(n), Direction::North)
-            | (Movement::Right(n), Direction::South)
-            | (Movement::Forward(n), Direction::West) => {
+            (Movement::Left(n), Direction::North | Direction::Up)
+            | (Movement::Right(n), Direction::South | Direction::Down)
+            | (Movement::Forward(n), Direction::West | Direction::Left) => {
                 self.facing = Direction::West;
                 self.coord.x -= n;
             }
-            (Movement::Left(n), Direction::East)
-            | (Movement::Right(n), Direction::West)
-            | (Movement::Forward(n), Direction::North) => {
+            (Movement::Left(n), Direction::East | Direction::Right)
+            | (Movement::Right(n), Direction::West | Direction::Left)
+            | (Movement::Forward(n), Direction::North | Direction::Up) => {
                 self.facing = Direction::North;
                 self.coord.y -= n;
             }
-            (Movement::Left(n), Direction::West)
-            | (Movement::Right(n), Direction::East)
-            | (Movement::Forward(n), Direction::South) => {
+            (Movement::Left(n), Direction::West | Direction::Left)
+            | (Movement::Right(n), Direction::East | Direction::Right)
+            | (Movement::Forward(n), Direction::South | Direction::Down) => {
                 self.facing = Direction::South;
                 self.coord.y += n;
             }

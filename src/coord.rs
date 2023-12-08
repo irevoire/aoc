@@ -683,19 +683,19 @@ where
     fn add(self, dir: direction::Direction) -> Self {
         use direction::Direction::*;
         match dir {
-            West => Self {
+            West | Left => Self {
                 x: self.x - I::one(),
                 ..self
             },
-            East => Self {
+            East | Right => Self {
                 x: self.x + I::one(),
                 ..self
             },
-            North => Self {
+            North | Up => Self {
                 y: self.y - I::one(),
                 ..self
             },
-            South => Self {
+            South | Down => Self {
                 y: self.y + I::one(),
                 ..self
             },

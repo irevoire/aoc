@@ -11,6 +11,10 @@ pub enum Direction {
     West,
     East,
     South,
+    Up,
+    Left,
+    Right,
+    Down,
 }
 
 /// The default direction is the `North`
@@ -29,10 +33,10 @@ impl Add<isize> for Direction {
 
     fn add(self, n: isize) -> Self::Output {
         match self {
-            Direction::North => Movement::North(n),
-            Direction::West => Movement::West(n),
-            Direction::East => Movement::East(n),
-            Direction::South => Movement::South(n),
+            Direction::North | Direction::Up => Movement::North(n),
+            Direction::West | Direction::Left => Movement::West(n),
+            Direction::East | Direction::Right => Movement::East(n),
+            Direction::South | Direction::Down => Movement::South(n),
         }
     }
 }
@@ -90,15 +94,19 @@ impl FromStr for Direction {
     ///
     /// assert_eq!("^".parse::<Direction>().unwrap(), Direction::North);
     /// assert_eq!("<".parse::<Direction>().unwrap(), Direction::West);
-    /// assert_eq!("right".parse::<Direction>().unwrap(), Direction::East);
+    /// assert_eq!("right".parse::<Direction>().unwrap(), Direction::Right);
     /// assert_eq!("S".parse::<Direction>().unwrap(), Direction::South);
     /// ```
     fn from_str(s: &str) -> Result<Self> {
         Ok(match s.to_lowercase().trim() {
-            "^" | "u" | "n" | "up" | "north" | "top" => Self::North,
-            ">" | "r" | "e" | "right" | "east" => Self::East,
-            "v" | "d" | "s" | "down" | "south" | "bottom" => Self::South,
-            "<" | "l" | "w" | "left" | "west" => Self::West,
+            "^" | "n" | "north" | "top" => Self::North,
+            "u" | "up" => Self::Up,
+            ">" | "e" | "east" => Self::East,
+            "r" | "right" => Self::Right,
+            "v" | "s" | "south" | "bottom" => Self::South,
+            "d" | "down" => Self::Down,
+            "<" | "w" | "west" => Self::West,
+            "l" | "left" => Self::Left,
             s => bail!("can’t convert {} as a direction", s),
         })
     }
