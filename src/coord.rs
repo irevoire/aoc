@@ -775,6 +775,26 @@ where
     }
 }
 
+impl<I> std::ops::Sub<Coord<I>> for Coord<I>
+where
+    I: ops::Sub<Output = I> + Clone,
+{
+    type Output = Self;
+
+    /// ```
+    /// use aoc::{Coord, Direction};
+    ///
+    /// let coord = Coord::default();
+    /// let coord2 = Coord::at(3, 5);
+    ///
+    /// assert_eq!(coord - coord2, Coord::at(-3, -5));
+    /// assert_eq!(coord2 - coord, Coord::at(3, 5));
+    /// ```
+    fn sub(self, n: Coord<I>) -> Self {
+        Coord::at(self.x - n.x, self.y - n.y)
+    }
+}
+
 impl<I> std::ops::Mul<I> for Coord<I>
 where
     I: ops::Mul<Output = I> + Clone,
