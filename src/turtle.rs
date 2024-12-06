@@ -1,7 +1,7 @@
 use crate::{Coord, Direction, Movement};
 use std::ops::{Add, AddAssign};
 
-#[derive(Debug, Default, Clone, Eq, PartialEq, Hash)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Hash)]
 pub struct Turtle {
     pub coord: Coord<isize>,
     pub facing: Direction,
