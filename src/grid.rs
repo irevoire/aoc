@@ -106,6 +106,20 @@ impl<T> Grid<T> {
         self.data.len()
     }
 
+    pub fn contains<I>(&self, coord: &Coord<I>) -> bool
+    where
+        I: TryInto<usize> + Clone,
+    {
+        let Ok(x) = coord.x.clone().try_into() else {
+            return false;
+        };
+        let Ok(y) = coord.y.clone().try_into() else {
+            return false;
+        };
+
+        x < self.width() && y < self.height()
+    }
+
     /// Return an [Iterator] on all the elements of the [Grid].
     ///
     /// See also [Grid::iter_mut], [Grid::enumerate] and [Grid::lines].
@@ -872,22 +886,6 @@ impl<T: Default + Clone> Grid<T> {
     pub fn horizontal_symmetry(&mut self) {
         let data = std::mem::take(&mut self.data);
         self.data = data.into_iter().rev().collect();
-    }
-}
-
-impl<I> Grid<I>
-where
-    I: TryInto<usize> + Clone,
-{
-    pub fn contains(&self, coord: &Coord<I>) -> bool {
-        let Ok(x) = coord.x.clone().try_into() else {
-            return false;
-        };
-        let Ok(y) = coord.y.clone().try_into() else {
-            return false;
-        };
-
-        x < self.width() && y < self.height()
     }
 }
 
