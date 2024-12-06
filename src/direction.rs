@@ -1,7 +1,10 @@
 //! Enum to represent a direction on a grid
 
+use crate::Movement;
 use anyhow::{bail, Error, Result};
+use std::convert::TryFrom;
 use std::ops::Add;
+
 use std::str::FromStr;
 
 /// Represent a direction.
@@ -17,16 +20,40 @@ pub enum Direction {
     Down,
 }
 
+impl Direction {
+    pub fn rotate_clockwise(self) -> Self {
+        match self {
+            Direction::North => Direction::East,
+            Direction::West => Direction::North,
+            Direction::East => Direction::South,
+            Direction::South => Direction::West,
+            Direction::Up => Direction::Right,
+            Direction::Left => Direction::Up,
+            Direction::Right => Direction::Down,
+            Direction::Down => Direction::Left,
+        }
+    }
+
+    pub fn rotate_anti_clockwise(self) -> Self {
+        match self {
+            Direction::North => Direction::West,
+            Direction::West => Direction::South,
+            Direction::East => Direction::North,
+            Direction::South => Direction::West,
+            Direction::Up => Direction::Left,
+            Direction::Left => Direction::South,
+            Direction::Right => Direction::North,
+            Direction::Down => Direction::East,
+        }
+    }
+}
+
 /// The default direction is the `North`
 impl Default for Direction {
     fn default() -> Self {
         Self::North
     }
 }
-
-use std::convert::TryFrom;
-
-use crate::Movement;
 
 impl Add<isize> for Direction {
     type Output = Movement;
