@@ -891,61 +891,67 @@ impl<T: Default + Clone> Grid<T> {
 
 impl<T, I> std::ops::Index<&Coord<I>> for Grid<T>
 where
-    I: Into<usize> + Clone,
+    I: TryInto<usize> + Clone,
+    I::Error: std::fmt::Debug,
 {
     type Output = T;
 
     fn index(&self, index: &Coord<I>) -> &Self::Output {
-        &self.data[index.y.clone().into()][index.x.clone().into()]
+        &self.data[index.y.clone().try_into().unwrap()][index.x.clone().try_into().unwrap()]
     }
 }
 
 impl<T, I> std::ops::IndexMut<&Coord<I>> for Grid<T>
 where
-    I: Into<usize> + Clone,
+    I: TryInto<usize> + Clone,
+    I::Error: std::fmt::Debug,
 {
     fn index_mut(&mut self, index: &Coord<I>) -> &mut Self::Output {
-        &mut self.data[index.y.clone().into()][index.x.clone().into()]
+        &mut self.data[index.y.clone().try_into().unwrap()][index.x.clone().try_into().unwrap()]
     }
 }
 
 impl<T, I> std::ops::Index<Coord<I>> for Grid<T>
 where
-    I: Into<usize> + Clone,
+    I: TryInto<usize> + Clone,
+    I::Error: std::fmt::Debug,
 {
     type Output = T;
 
     fn index(&self, index: Coord<I>) -> &Self::Output {
-        &self.data[index.y.clone().into()][index.x.clone().into()]
+        &self.data[index.y.clone().try_into().unwrap()][index.x.clone().try_into().unwrap()]
     }
 }
 
 impl<T, I> std::ops::IndexMut<Coord<I>> for Grid<T>
 where
-    I: Into<usize> + Clone,
+    I: TryInto<usize> + Clone,
+    I::Error: std::fmt::Debug,
 {
     fn index_mut(&mut self, index: Coord<I>) -> &mut Self::Output {
-        &mut self.data[index.y.clone().into()][index.x.clone().into()]
+        &mut self.data[index.y.clone().try_into().unwrap()][index.x.clone().try_into().unwrap()]
     }
 }
 
 impl<T, I> std::ops::Index<(I, I)> for Grid<T>
 where
-    I: Into<usize> + Clone,
+    I: TryInto<usize> + Clone,
+    I::Error: std::fmt::Debug,
 {
     type Output = T;
 
     fn index(&self, index: (I, I)) -> &Self::Output {
-        &self.data[index.1.clone().into()][index.0.clone().into()]
+        &self.data[index.1.clone().try_into().unwrap()][index.0.clone().try_into().unwrap()]
     }
 }
 
 impl<T, I> std::ops::IndexMut<(I, I)> for Grid<T>
 where
-    I: Into<usize> + Clone,
+    I: TryInto<usize> + Clone,
+    I::Error: std::fmt::Debug,
 {
     fn index_mut(&mut self, index: (I, I)) -> &mut Self::Output {
-        &mut self.data[index.1.clone().into()][index.0.clone().into()]
+        &mut self.data[index.1.clone().try_into().unwrap()][index.0.clone().try_into().unwrap()]
     }
 }
 
