@@ -46,6 +46,15 @@ impl<I> Coord<I> {
     }
 }
 
+impl Coord<usize> {
+    pub fn sign(self) -> Coord<isize> {
+        Coord {
+            x: self.x as isize,
+            y: self.y as isize,
+        }
+    }
+}
+
 impl<I> Coord<I>
 where
     I: ops::Sub<Output = I> + ops::Add<Output = I> + Ord + Copy + Default,

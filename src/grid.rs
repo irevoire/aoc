@@ -875,45 +875,79 @@ impl<T: Default + Clone> Grid<T> {
     }
 }
 
-impl<T> std::ops::Index<&Coord<usize>> for Grid<T> {
+impl<I> Grid<I>
+where
+    I: TryInto<usize> + Clone,
+{
+    pub fn contains(&self, coord: &Coord<I>) -> bool {
+        let Ok(x) = coord.x.clone().try_into() else {
+            return false;
+        };
+        let Ok(y) = coord.y.clone().try_into() else {
+            return false;
+        };
+
+        x < self.width() && y < self.height()
+    }
+}
+
+impl<T, I> std::ops::Index<&Coord<I>> for Grid<T>
+where
+    I: Into<usize> + Clone,
+{
     type Output = T;
 
-    fn index(&self, index: &Coord<usize>) -> &Self::Output {
-        &self.data[index.y][index.x]
+    fn index(&self, index: &Coord<I>) -> &Self::Output {
+        &self.data[index.y.clone().into()][index.x.clone().into()]
     }
 }
 
-impl<T> std::ops::IndexMut<&Coord<usize>> for Grid<T> {
-    fn index_mut(&mut self, index: &Coord<usize>) -> &mut Self::Output {
-        &mut self.data[index.y][index.x]
+impl<T, I> std::ops::IndexMut<&Coord<I>> for Grid<T>
+where
+    I: Into<usize> + Clone,
+{
+    fn index_mut(&mut self, index: &Coord<I>) -> &mut Self::Output {
+        &mut self.data[index.y.clone().into()][index.x.clone().into()]
     }
 }
 
-impl<T> std::ops::Index<Coord<usize>> for Grid<T> {
+impl<T, I> std::ops::Index<Coord<I>> for Grid<T>
+where
+    I: Into<usize> + Clone,
+{
     type Output = T;
 
-    fn index(&self, index: Coord<usize>) -> &Self::Output {
-        &self.data[index.y][index.x]
+    fn index(&self, index: Coord<I>) -> &Self::Output {
+        &self.data[index.y.clone().into()][index.x.clone().into()]
     }
 }
 
-impl<T> std::ops::IndexMut<Coord<usize>> for Grid<T> {
-    fn index_mut(&mut self, index: Coord<usize>) -> &mut Self::Output {
-        &mut self.data[index.y][index.x]
+impl<T, I> std::ops::IndexMut<Coord<I>> for Grid<T>
+where
+    I: Into<usize> + Clone,
+{
+    fn index_mut(&mut self, index: Coord<I>) -> &mut Self::Output {
+        &mut self.data[index.y.clone().into()][index.x.clone().into()]
     }
 }
 
-impl<T> std::ops::Index<(usize, usize)> for Grid<T> {
+impl<T, I> std::ops::Index<(I, I)> for Grid<T>
+where
+    I: Into<usize> + Clone,
+{
     type Output = T;
 
-    fn index(&self, index: (usize, usize)) -> &Self::Output {
-        &self.data[index.1][index.0]
+    fn index(&self, index: (I, I)) -> &Self::Output {
+        &self.data[index.1.clone().into()][index.0.clone().into()]
     }
 }
 
-impl<T> std::ops::IndexMut<(usize, usize)> for Grid<T> {
-    fn index_mut(&mut self, index: (usize, usize)) -> &mut Self::Output {
-        &mut self.data[index.1][index.0]
+impl<T, I> std::ops::IndexMut<(I, I)> for Grid<T>
+where
+    I: Into<usize> + Clone,
+{
+    fn index_mut(&mut self, index: (I, I)) -> &mut Self::Output {
+        &mut self.data[index.1.clone().into()][index.0.clone().into()]
     }
 }
 
