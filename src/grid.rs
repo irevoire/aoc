@@ -575,7 +575,7 @@ impl<T> Grid<T> {
                 .map(|(l, line)| {
                     line.into_iter()
                         .enumerate()
-                        .map(|(c, el)| (f)(Coord::at(l, c), el))
+                        .map(|(c, el)| (f)(Coord::at(c, l), el))
                         .collect()
                 })
                 .collect(),
