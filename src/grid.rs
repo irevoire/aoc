@@ -766,11 +766,16 @@ impl<T> Grid<T> {
     /// assert_eq!(grid.get(Coord::at(3, 3)), Some(&0));
     /// assert_eq!(grid.get(Coord::at(4, 4)), None);
     /// ```
-    pub fn get(&self, coord: Coord<usize>) -> Option<&T> {
-        if coord.x >= self.width() || coord.y >= self.height() {
+    pub fn get<I>(&self, coord: Coord<I>) -> Option<&T>
+    where
+        I: TryInto<usize> + Clone,
+    {
+        let x = coord.x.try_into().ok()?;
+        let y = coord.y.try_into().ok()?;
+        if x >= self.width() || y >= self.height() {
             None
         } else {
-            Some(&self[coord])
+            Some(&self[(x, y)])
         }
     }
 
@@ -796,11 +801,17 @@ impl<T> Grid<T> {
     /// assert_eq!(grid.get(Coord::at(3, 3)), Some(&0));
     /// assert_eq!(grid.get(Coord::at(4, 4)), None);
     /// ```
-    pub fn get_mut(&mut self, coord: Coord<usize>) -> Option<&mut T> {
-        if coord.x >= self.width() || coord.y >= self.height() {
+    pub fn get_mut<I>(&mut self, coord: Coord<I>) -> Option<&mut T>
+    where
+        I: TryInto<usize> + Clone,
+    {
+        let x = coord.x.try_into().ok()?;
+        let y = coord.y.try_into().ok()?;
+
+        if x >= self.width() || y >= self.height() {
             None
         } else {
-            Some(&mut self[coord])
+            Some(&mut self[(x, y)])
         }
     }
 
