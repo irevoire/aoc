@@ -1,7 +1,7 @@
 //! Define a Coordinate and all kind of operation.
 //! **Be really cautious when using this module, we are only working on Manhattan distance**
 
-use crate::{direction, num, range};
+use crate::{direction, num, range, Direction};
 use anyhow::Result;
 use std::collections::HashSet;
 use std::str::FromStr;
@@ -301,7 +301,45 @@ where
             self.y.checked_add(I::one()).map(|y| Coord::at(self.x, y)),
         ];
 
-        ret.into_iter().filter_map(|s| s)
+        ret.into_iter().flatten()
+    }
+
+    /// Returns an iterator over all the adjacent position + the direction used go find this coord.
+    ///
+    /// See also [Coord::is_manhattan_adjacent], [Coord::chebyshev_adjacent].
+    /// # Example
+    /// ```
+    /// use aoc::{Coord, Direction};
+    ///
+    /// let mut coords = Coord::<isize>::at(0, 0).manhattan_adjacent_with_direction();
+    ///
+    /// assert_eq!(coords.next(), Some((Coord::at(-1, 0), Direction::Left)));
+    /// assert_eq!(coords.next(), Some((Coord::at(1, 0), Direction::Right)));
+    /// assert_eq!(coords.next(), Some((Coord::at(0, -1), Direction::Up)));
+    /// assert_eq!(coords.next(), Some((Coord::at(0, 1), Direction::Down)));
+    /// assert_eq!(coords.next(), None);
+    /// ```
+    pub fn manhattan_adjacent_with_direction(&self) -> impl Iterator<Item = (Coord<I>, Direction)> {
+        let ret = [
+            (
+                self.x.checked_sub(I::one()).map(|x| Coord::at(x, self.y)),
+                Direction::Left,
+            ),
+            (
+                self.x.checked_add(I::one()).map(|x| Coord::at(x, self.y)),
+                Direction::Right,
+            ),
+            (
+                self.y.checked_sub(I::one()).map(|y| Coord::at(self.x, y)),
+                Direction::Up,
+            ),
+            (
+                self.y.checked_add(I::one()).map(|y| Coord::at(self.x, y)),
+                Direction::Down,
+            ),
+        ];
+
+        ret.into_iter().filter_map(|(s, dir)| s.map(|s| (s, dir)))
     }
 
     /// Returns an iterator over all the adjacent position.
